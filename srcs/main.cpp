@@ -1,3 +1,4 @@
+#include "../includes/Server.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -16,8 +17,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  std::cout << "IRC server running on port " << port << " with password "
-            << password << std::endl;
+  Server server(port, password);
+  server.run();
 
   return 0;
 }
