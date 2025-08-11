@@ -22,5 +22,7 @@ private:
   Fd socket_;
 
   // initialize the socket
-  void initSocket(Fd &fd);
+  void initSocket();
+
+  void eventLoop();
 };
