@@ -4,16 +4,20 @@
 #include <map>
 #include <string>
 
+class ServerHandler;
+
 class Server {
 public:
-  enum ServerStatus { STARTING, RUNNING, ERROR };
+  friend class ServerHandler;
 
   Server(int port, std::string password);
   ~Server();
 
+  enum ServerStatus { STARTING, RUNNING, ERROR };
+
   // run the server
   void run();
-
+  
   ServerStatus getStatus() const;
 
 private:
@@ -24,24 +28,6 @@ private:
   int epollFd_;
   std::map<int, Client> clients_;
 
-  // initialize the socket
-  void initSocket();
-
-  // handle the accept event
-  void handleAccept();
-
-  // handle the recv event
-  void handleRecv(Client &client);
-
-  // handle the send event
-  void handleSend(Client &client);
-
-  // handle the close event
-  void handleClose(Client &client);
-
   // event loop
   void eventLoop();
-
-  // add an event to the epoll
-  int addEpollEvent(int fd, int events);
 };
