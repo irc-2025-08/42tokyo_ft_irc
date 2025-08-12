@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Fd.hpp"
+#include "Client.hpp"
 #include <string>
+#include <map>
 
 class Server {
 public:
@@ -19,10 +20,18 @@ private:
   int port_;
   std::string password_;
   ServerStatus serverStatus_;
-  Fd socket_;
+  int socket_;
+  std::map<int, Client> clients_;
 
   // initialize the socket
   void initSocket();
 
+  // handle the accept event
+  void handleAccept();
+
+  // handle the recv event
+  void handleRecv();
+
+  // event loop
   void eventLoop();
 };

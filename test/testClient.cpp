@@ -1,4 +1,3 @@
-#include "../includes/Fd.hpp"
 #include <cerrno>
 #include <cstring>
 #include <iostream>
@@ -12,8 +11,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  Fd fd(socket(AF_INET, SOCK_STREAM, 0));
-  if (!fd.isValid()) {
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (fd < 0) {
     strerror(errno);
     return 1;
   }
@@ -23,11 +22,18 @@ int main(int argc, char **argv) {
   addr.sin_addr.s_addr = INADDR_ANY;
   addr.sin_port = htons(atoi(argv[1]));
 
-  if (connect(fd.get(), (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+  if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
     strerror(errno);
     return 1;
   }
   std::cout << "Connected to server" << std::endl;
+
+  char buffer[1024];
+  while (true) {
+    std::cin.getline(buffer, 1024);
+    send(fd, buffer, strlen(buffer), 0);
+    memset(buffer, 0, 1024);
+  }
 
   return 0;
 }
