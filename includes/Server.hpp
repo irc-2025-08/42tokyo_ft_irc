@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Client.hpp"
-#include <string>
 #include <map>
+#include <string>
 
 class Server {
 public:
@@ -20,7 +20,8 @@ private:
   int port_;
   std::string password_;
   ServerStatus serverStatus_;
-  int socket_;
+  int socketFd_;
+  int epollFd_;
   std::map<int, Client> clients_;
 
   // initialize the socket
@@ -30,8 +31,17 @@ private:
   void handleAccept();
 
   // handle the recv event
-  void handleRecv();
+  void handleRecv(Client &client);
+
+  // handle the send event
+  void handleSend(Client &client);
+
+  // handle the close event
+  void handleClose(Client &client);
 
   // event loop
   void eventLoop();
+
+  // add an event to the epoll
+  int addEpollEvent(int fd, int events);
 };

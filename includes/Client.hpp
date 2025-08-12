@@ -2,11 +2,11 @@
 
 #include <netinet/in.h>
 
-class Client
-{
+class Client {
 public:
   enum ClientStatus { CONNECTED, DISCONNECTED };
 
+  Client();
   Client(int fd, sockaddr_in addr);
   ~Client();
   Client(const Client &other);
@@ -14,8 +14,9 @@ public:
 
   ClientStatus getStatus() const;
   void setStatus(ClientStatus status);
+  int getFd() const;
 
-  private:
+private:
   int fd_;
   sockaddr_in addr_;
   ClientStatus status_;

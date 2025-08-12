@@ -2,5 +2,6 @@
 
 namespace config {
   const int backlog = 100;
-  const int buffer_size = 1024;
+  const int bufferSize = 1024;
+  const int maxEvents = 100;
 }
