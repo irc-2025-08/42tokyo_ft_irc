@@ -9,15 +9,15 @@ class ServerHandler;
 class Server {
 public:
   friend class ServerHandler;
+  enum ServerStatus { STARTING, RUNNING, ERROR };
 
   Server(int port, std::string password);
   ~Server();
 
-  enum ServerStatus { STARTING, RUNNING, ERROR };
-
-  // run the server
+  /**
+   * @brief run the server
+   */
   void run();
-  
   ServerStatus getStatus() const;
 
 private:
@@ -28,6 +28,8 @@ private:
   int epollFd_;
   std::map<int, Client> clients_;
 
-  // event loop
+  /**
+   * @brief event loop
+   */
   void eventLoop();
 };

@@ -17,10 +17,11 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  // run the server
   Server server(port, password);
-  // main loop
   server.run();
 
+  // check if the server stopped with an error
   if (server.getStatus() == Server::ERROR) {
     std::cerr << "Server stopped with error" << std::endl;
     return 1;

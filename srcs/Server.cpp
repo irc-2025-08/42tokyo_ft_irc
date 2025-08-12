@@ -12,6 +12,7 @@
 
 Server::Server(int port, std::string password)
     : port_(port), password_(password), serverStatus_(STARTING) {
+  // create a socket and bind it to the port
   socketFd_ = ServerUtils::createSocket(port_);
   if (socketFd_ < 0) {
     std::cerr << "Error: Failed to create socket" << std::endl;
@@ -19,22 +20,26 @@ Server::Server(int port, std::string password)
     return;
   }
 
+  // set the socket to non-blocking
   if (ServerUtils::setNonblock(socketFd_) < 0) {
     std::cerr << "Error: Failed to set socket to non-blocking" << std::endl;
     serverStatus_ = ERROR;
   }
 
+  // create an epoll instance
   epollFd_ = epoll_create1(0);
   if (epollFd_ < 0) {
     std::cerr << "Error: Failed to create epoll instance" << std::endl;
     serverStatus_ = ERROR;
   }
 
+  // add the socket to the epoll instance
   if (ServerUtils::addEpollEvent(epollFd_, socketFd_, EPOLLIN) < 0) {
     std::cerr << "Error: Failed to add socket to epoll" << std::endl;
     serverStatus_ = ERROR;
   }
 
+  // check if the server initialized with an error
   if (serverStatus_ == ERROR)
     std::cerr << "Error: Failed to initialize server" << std::endl;
   else
@@ -42,6 +47,7 @@ Server::Server(int port, std::string password)
 }
 
 Server::~Server() {
+  // close the socket and all clients fds
   close(socketFd_);
   for (std::map<int, Client>::iterator it = clients_.begin();
        it != clients_.end(); ++it) {
@@ -65,6 +71,7 @@ void Server::eventLoop() {
   epoll_event events[config::maxEvents];
 
   while (serverStatus_ == RUNNING) {
+    // wait for events
     int nfds = epoll_wait(epollFd_, events, config::maxEvents, -1);
 
     if (nfds < 0) {
@@ -72,14 +79,19 @@ void Server::eventLoop() {
       continue;
     }
 
+    // handle events
     for (int i = 0; i < nfds; i++) {
+      // handle accept event if the ready fd is the socket fd
       if (events[i].data.fd == socketFd_) {
         ServerHandler::handleAccept(*this);
         continue;
       }
 
+      // if the ready fd is not the socket fd, it must be a client fd
+      // get the ready client
       Client &client = clients_[events[i].data.fd];
 
+      // handle client events
       if (events[i].events & (EPOLLHUP | EPOLLERR | EPOLLRDHUP)) {
         ServerHandler::handleClose(*this, client);
         continue;

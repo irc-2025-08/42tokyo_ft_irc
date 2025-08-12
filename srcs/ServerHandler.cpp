@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+// TODO
 void ServerHandler::handleAccept(Server &server) {
   while (true) {
     sockaddr_in client_addr;
@@ -73,9 +74,10 @@ void ServerHandler::handleSend(Server &server, Client &client) {
             << std::endl;
 }
 
+// TODO
 void ServerHandler::handleClose(Server &server, Client &client) {
-  std::cout << "Info: Client " << client.getFd() << " disconnected"
-            << std::endl;
   server.clients_.erase(client.getFd());
   close(client.getFd());
+  std::cout << "Info: Client " << client.getFd() << " disconnected"
+            << std::endl;
 }

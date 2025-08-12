@@ -2,6 +2,7 @@
 
 #include <netinet/in.h>
 
+// TODO
 class Client {
 public:
   enum ClientStatus { CONNECTED, DISCONNECTED };
