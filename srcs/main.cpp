@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <cstring>
+#include <cerrno>
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -24,7 +26,8 @@ int main(int argc, char **argv) {
     std::cout << "[INFO] ircd: Server stopped" << std::endl;
     return 0;
   } catch (const std::exception &e) {
-    std::cerr << "[ERROR] ircd: " << e.what() << std::endl;
+    std::cerr << "[ERROR] ircd: " << e.what() << ". " << strerror(errno)
+              << std::endl;
     return 1;
   }
 }

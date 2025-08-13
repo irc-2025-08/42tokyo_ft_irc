@@ -9,4 +9,7 @@ namespace config {
 
   // Maximum events per epoll_wait call
   const int maxEvents = 100;
+
+  // I/O buffer size for recv() and send()
+  const int ioBufferSize = 1024;
 }

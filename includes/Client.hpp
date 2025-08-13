@@ -1,24 +1,26 @@
 #pragma once
 
 #include <netinet/in.h>
+#include <string>
+
+class Server;
 
 // TODO
 class Client {
 public:
-  enum ClientStatus { CONNECTED, DISCONNECTED };
-
   Client();
   Client(int fd, sockaddr_in addr);
   ~Client();
   Client(const Client &other);
   Client &operator=(const Client &other);
 
-  ClientStatus getStatus() const;
-  void setStatus(ClientStatus status);
+  std::string recvBuffer_;
+  std::string sendBuffer_;
+
   int getFd() const;
+  int sendMessage(Server &server, const std::string &message);
 
 private:
   int fd_;
   sockaddr_in addr_;
-  ClientStatus status_;
 };
