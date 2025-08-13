@@ -9,7 +9,7 @@ class ServerHandler;
 class Server {
 public:
   friend class ServerHandler;
-  enum ServerStatus { STARTING, RUNNING, ERROR };
+  enum ServerStatus { SERV_STOPPED, SERV_RUNNING, SERV_ERROR };
 
   Server(int port, std::string password);
   ~Server();
@@ -19,6 +19,7 @@ public:
    */
   void run();
   ServerStatus getStatus() const;
+  void setStatus(ServerStatus status);
 
 private:
   int port_;

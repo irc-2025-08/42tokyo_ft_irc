@@ -22,11 +22,11 @@ int main(int argc, char **argv) {
   server.run();
 
   // check if the server stopped with an error
-  if (server.getStatus() == Server::ERROR) {
-    std::cerr << "Server stopped with error" << std::endl;
+  if (server.getStatus() == Server::SERV_ERROR) {
+    std::cerr << "[ERROR] ircd: Server stopped with error" << std::endl;
     return 1;
   } else {
-    std::cout << "Server stopped" << std::endl;
+    std::cout << "[INFO] ircd: Server stopped" << std::endl;
   }
 
   return 0;

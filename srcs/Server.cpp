@@ -11,39 +11,45 @@
 #include <unistd.h>
 
 Server::Server(int port, std::string password)
-    : port_(port), password_(password), serverStatus_(STARTING) {
+    : port_(port), password_(password), serverStatus_(SERV_STOPPED) {
+  std::cout << "[INFO] ircd: Initializing server..." << std::endl;
+
   // create a socket and bind it to the port
   socketFd_ = ServerUtils::createSocket(port_);
   if (socketFd_ < 0) {
-    std::cerr << "Error: Failed to create socket" << std::endl;
-    serverStatus_ = ERROR;
+    std::cerr << "[ERROR] ircd: Failed to create socket" << std::endl;
+    setStatus(SERV_ERROR);
     return;
   }
 
   // set the socket to non-blocking
   if (ServerUtils::setNonblock(socketFd_) < 0) {
-    std::cerr << "Error: Failed to set socket to non-blocking" << std::endl;
-    serverStatus_ = ERROR;
+    std::cerr << "[ERROR] ircd: Failed to set socket to non-blocking"
+              << std::endl;
+    setStatus(SERV_ERROR);
+    return;
   }
 
   // create an epoll instance
   epollFd_ = epoll_create1(0);
   if (epollFd_ < 0) {
-    std::cerr << "Error: Failed to create epoll instance" << std::endl;
-    serverStatus_ = ERROR;
+    std::cerr << "[ERROR] ircd: Failed to create epoll instance" << std::endl;
+    setStatus(SERV_ERROR);
+    return;
   }
 
   // add the socket to the epoll instance
   if (ServerUtils::addEpollEvent(epollFd_, socketFd_, EPOLLIN) < 0) {
-    std::cerr << "Error: Failed to add socket to epoll" << std::endl;
-    serverStatus_ = ERROR;
+    std::cerr << "[ERROR] ircd: Failed to add socket to epoll" << std::endl;
+    setStatus(SERV_ERROR);
+    return;
   }
 
   // check if the server initialized with an error
-  if (serverStatus_ == ERROR)
-    std::cerr << "Error: Failed to initialize server" << std::endl;
+  if (getStatus() == SERV_ERROR)
+    std::cerr << "[ERROR] ircd: Failed to initialize server" << std::endl;
   else
-    serverStatus_ = RUNNING;
+    std::cout << "[INFO] ircd: Server initialized successfully" << std::endl;
 }
 
 Server::~Server() {
@@ -55,14 +61,21 @@ Server::~Server() {
   }
 }
 
+void Server::setStatus(ServerStatus status) {
+  if (getStatus() == SERV_ERROR)
+    return;
+  serverStatus_ = status;
+}
+
 Server::ServerStatus Server::getStatus() const { return serverStatus_; }
 
 void Server::run() {
-  if (serverStatus_ == ERROR)
+  if (getStatus() == SERV_ERROR)
     return;
 
-  std::cout << "Info: IRC server running on port " << port_ << " with password "
-            << password_ << std::endl;
+  setStatus(SERV_RUNNING);
+  std::cout << "[INFO] ircd: IRC server running on port " << port_
+            << " with password " << password_ << std::endl;
 
   eventLoop();
 }
@@ -70,12 +83,12 @@ void Server::run() {
 void Server::eventLoop() {
   epoll_event events[config::maxEvents];
 
-  while (serverStatus_ == RUNNING) {
+  while (getStatus() == SERV_RUNNING) {
     // wait for events
     int nfds = epoll_wait(epollFd_, events, config::maxEvents, -1);
 
     if (nfds < 0) {
-      std::cerr << "Error: Failed to wait for events" << std::endl;
+      std::cerr << "[WARN] ircd: Failed to wait for events" << std::endl;
       continue;
     }
 
