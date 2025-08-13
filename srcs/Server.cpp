@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
+#include <stdexcept>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -16,40 +17,23 @@ Server::Server(int port, std::string password)
 
   // create a socket and bind it to the port
   socketFd_ = ServerUtils::createSocket(port_);
-  if (socketFd_ < 0) {
-    std::cerr << "[ERROR] ircd: Failed to create socket" << std::endl;
-    setStatus(SERV_ERROR);
-    return;
-  }
+  if (socketFd_ < 0)
+    throw std::runtime_error("Failed to create socket");
 
   // set the socket to non-blocking
-  if (ServerUtils::setNonblock(socketFd_) < 0) {
-    std::cerr << "[ERROR] ircd: Failed to set socket to non-blocking"
-              << std::endl;
-    setStatus(SERV_ERROR);
-    return;
-  }
+  if (ServerUtils::setNonblock(socketFd_) < 0)
+    throw std::runtime_error("Failed to set socket to non-blocking");
 
   // create an epoll instance
   epollFd_ = epoll_create1(0);
-  if (epollFd_ < 0) {
-    std::cerr << "[ERROR] ircd: Failed to create epoll instance" << std::endl;
-    setStatus(SERV_ERROR);
-    return;
-  }
+  if (epollFd_ < 0)
+    throw std::runtime_error("Failed to create epoll instance");
 
   // add the socket to the epoll instance
-  if (ServerUtils::addEpollEvent(epollFd_, socketFd_, EPOLLIN) < 0) {
-    std::cerr << "[ERROR] ircd: Failed to add socket to epoll" << std::endl;
-    setStatus(SERV_ERROR);
-    return;
-  }
+  if (ServerUtils::addEpollEvent(epollFd_, socketFd_, EPOLLIN) < 0)
+    throw std::runtime_error("Failed to add socket to epoll");
 
-  // check if the server initialized with an error
-  if (getStatus() == SERV_ERROR)
-    std::cerr << "[ERROR] ircd: Failed to initialize server" << std::endl;
-  else
-    std::cout << "[INFO] ircd: Server initialized successfully" << std::endl;
+  std::cout << "[INFO] ircd: Server initialized successfully" << std::endl;
 }
 
 Server::~Server() {

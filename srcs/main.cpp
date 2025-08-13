@@ -18,16 +18,13 @@ int main(int argc, char **argv) {
   }
 
   // run the server
-  Server server(port, password);
-  server.run();
-
-  // check if the server stopped with an error
-  if (server.getStatus() == Server::SERV_ERROR) {
-    std::cerr << "[ERROR] ircd: Server stopped with error" << std::endl;
-    return 1;
-  } else {
+  try {
+    Server server(port, password);
+    server.run();
     std::cout << "[INFO] ircd: Server stopped" << std::endl;
+    return 0;
+  } catch (const std::exception &e) {
+    std::cerr << "[ERROR] ircd: " << e.what() << std::endl;
+    return 1;
   }
-
-  return 0;
 }
