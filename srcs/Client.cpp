@@ -1,5 +1,6 @@
 #include "../includes/Client.hpp"
 #include <cstring>
+#include <sys/epoll.h>
 
 Client::Client() : fd_(-1) {}
 
@@ -16,9 +17,3 @@ Client &Client::operator=(const Client &other) {
 }
 
 int Client::getFd() const { return fd_; }
-
-int Client::sendMessage(Server &server, const std::string &message) {
-  (void)server;
-  (void)message;
-  return 0;
-}

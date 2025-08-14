@@ -90,7 +90,7 @@ void Server::eventLoop() {
 
       // handle client events
       if (events[i].events & (EPOLLHUP | EPOLLERR | EPOLLRDHUP)) {
-        ServerHandler::handleClose(*this, client);
+        ServerHandler::closeClientConnection(*this, client);
         continue;
       }
       if (events[i].events & EPOLLIN)

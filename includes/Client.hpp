@@ -18,7 +18,6 @@ public:
   std::string sendBuffer_;
 
   int getFd() const;
-  int sendMessage(Server &server, const std::string &message);
 
 private:
   int fd_;

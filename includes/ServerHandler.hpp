@@ -6,6 +6,25 @@
 class ServerHandler {
 public:
   /**
+   * @brief queue a message, it will be sent to the client in the event loop
+   * @param server the server
+   * @param client the client
+   * @param message the message to send
+   * @return 0 on success, -1 on error
+   * @note if failed, should close the client connection
+   */
+  static int queueMessage(Server &server, Client &client, const std::string &message);
+
+  /**
+  * @brief clear the send buffer and reset epoll event
+  * @param server the server
+  * @param client the client
+  * @return 0 on success, -1 on error
+  * @note if failed, should close the client connection
+  */
+  static int onSendComplete(Server &server, Client &client);
+
+  /**
    * @brief handle the accept event
    * @param server the server
    */
@@ -30,5 +49,5 @@ public:
    * @param server the server
    * @param client the client
    */
-  static void handleClose(Server &server, Client &client);
+  static void closeClientConnection(Server &server, Client &client);
 };

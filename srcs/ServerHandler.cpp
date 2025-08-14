@@ -1,4 +1,5 @@
 #include "../includes/ServerHandler.hpp"
+#include "../includes/CommandHandler.hpp"
 #include "../includes/ServerUtils.hpp"
 #include "../includes/config.hpp"
 #include <cerrno>
@@ -9,21 +10,34 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-namespace {
-  // TODO
-  void parseAndProcess(Server &server, Client &client) {
-    std::cout << "[INFO] ircd: Received message from client " << client.getFd()
-    << ": " << client.recvBuffer_ << std::endl;
-    client.recvBuffer_.clear();
-    (void)server;
-    // std::string::size_type pos = client.recvBuffer_.find("\r\n");
-    // if (pos != std::string::npos) {
-    //   std::string command = client.recvBuffer_.substr(0, pos);
-    //   client.recvBuffer_.erase(0, pos + 2);
-    //   processCommand(server, client, command);
-    // }
+int ServerHandler::queueMessage(Server &server, Client &client,
+                                const std::string &message) {
+  epoll_event event;
+  event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP | EPOLLOUT;
+  event.data.fd = client.getFd();
+
+  client.sendBuffer_.append(message);
+  if (epoll_ctl(server.epollFd_, EPOLL_CTL_MOD, client.getFd(), &event) < 0) {
+    std::cerr << "[WARN] ircd: epoll_ctl failed with client " << client.getFd()
+              << std::endl;
+    return -1;
   }
-} // namespace
+  return 0;
+}
+
+int ServerHandler::onSendComplete(Server &server, Client &client) {
+  epoll_event event;
+  event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
+  event.data.fd = client.getFd();
+
+  client.sendBuffer_.clear();
+  if (epoll_ctl(server.epollFd_, EPOLL_CTL_MOD, client.getFd(), &event) < 0) {
+    std::cerr << "[WARN] ircd: epoll_ctl failed with client " << client.getFd()
+              << std::endl;
+    return -1;
+  }
+  return 0;
+}
 
 void ServerHandler::handleAccept(Server &server) {
   while (true) {
@@ -66,13 +80,12 @@ void ServerHandler::handleRecv(Server &server, Client &client) {
 
   while (true) {
     errno = 0;
-    int bytesRead =
-        recv(client.getFd(), buffer, config::ioBufferSize, 0);
+    int bytesRead = recv(client.getFd(), buffer, config::ioBufferSize, 0);
 
     if (errno == EAGAIN)
       break;
     if (bytesRead == 0) {
-      handleClose(server, client);
+      closeClientConnection(server, client);
       return;
     }
     if (bytesRead < 0) {
@@ -84,17 +97,22 @@ void ServerHandler::handleRecv(Server &server, Client &client) {
     client.recvBuffer_.append(buffer, bytesRead);
   }
 
-  parseAndProcess(server, client);
+  CommandHandler::parseAndProcessCommand(server, client);
 }
 
-// TODO
 void ServerHandler::handleSend(Server &server, Client &client) {
-  (void)server;
-  std::cout << "[INFO] ircd: Sending message to client " << client.getFd()
-            << std::endl;
+  if (send(client.getFd(), client.sendBuffer_.c_str(),
+           client.sendBuffer_.size(), 0) < 0)
+    std::cerr << "[WARN] ircd: Failed to send data to client" << std::endl;
+
+  std::cout << "[INFO] ircd: Sent message to client " << client.getFd() << ": "
+            << client.sendBuffer_ << std::endl;
+
+  if (onSendComplete(server, client) < 0)
+    closeClientConnection(server, client);
 }
 
-void ServerHandler::handleClose(Server &server, Client &client) {
+void ServerHandler::closeClientConnection(Server &server, Client &client) {
   server.clients_.erase(client.getFd());
   close(client.getFd());
   std::cout << "[INFO] ircd: Client " << client.getFd() << " disconnected"
