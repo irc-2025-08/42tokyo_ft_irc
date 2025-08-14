@@ -71,7 +71,8 @@ void ServerHandler::handleAccept(Server &server) {
 
     server.clients_.insert(
         std::make_pair(clientFd, Client(clientFd, clientAddr)));
-    std::cout << "[INFO] ircd: New client connected" << std::endl;
+    std::cout << "[INFO] ircd: New client connected (fd: " << clientFd << ")"
+              << std::endl;
   }
 }
 
@@ -105,7 +106,7 @@ void ServerHandler::handleSend(Server &server, Client &client) {
            client.sendBuffer_.size(), 0) < 0)
     std::cerr << "[WARN] ircd: Failed to send data to client" << std::endl;
 
-  std::cout << "[INFO] ircd: Sent message to client " << client.getFd() << ": "
+  std::cout << "debug: Sent message to client " << client.getFd() << ":\n"
             << client.sendBuffer_ << std::endl;
 
   if (onSendComplete(server, client) < 0)
