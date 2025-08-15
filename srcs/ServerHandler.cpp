@@ -12,6 +12,7 @@
 
 int ServerHandler::queueMessage(Server &server, Client &client,
                                 const std::string &message) {
+  // add EPOLLOUT event
   epoll_event event;
   event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP | EPOLLOUT;
   event.data.fd = client.getFd();
@@ -26,6 +27,7 @@ int ServerHandler::queueMessage(Server &server, Client &client,
 }
 
 int ServerHandler::onSendComplete(Server &server, Client &client) {
+  // remove EPOLLOUT event
   epoll_event event;
   event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
   event.data.fd = client.getFd();
