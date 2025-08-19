@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace config {
   // listen() queue length: maximum pending connections
   const int backlog = 100;
@@ -12,4 +14,6 @@ namespace config {
 
   // I/O buffer size for recv() and send()
   const int ioBufferSize = 1024;
+
+  const std::string serverName = "myserver";
 }

@@ -18,8 +18,11 @@ public:
   std::string sendBuffer_;
 
   int getFd() const;
+  std::string getNickname() const;
+  void setNickname(const std::string &nickname);
 
 private:
   int fd_;
   sockaddr_in addr_;
+  std::string nickname_;
 };

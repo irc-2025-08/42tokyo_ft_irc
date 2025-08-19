@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include "../includes/CommandHandler.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -18,6 +19,8 @@ int main(int argc, char **argv) {
     std::cerr << "Error: port must be between 1024 and 65535" << std::endl;
     return 1;
   }
+
+  CommandHandler::initCommandMap();
 
   // run the server
   try {
