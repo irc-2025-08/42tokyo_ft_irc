@@ -2,38 +2,65 @@
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/ServerHandler.hpp"
-#include "../includes/config.hpp"
 #include <iostream>
 #include <sstream>
 
 // TODO
 
-std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)> CommandHandler::commandMap_;
+std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)>
+    CommandHandler::commandMap_;
 
-void CommandHandler::initCommandMap() {
-  commandMap_["PING"] = pingCmd;
-}
+void CommandHandler::initCommandMap() { commandMap_["PING"] = pingCmd; }
 
 IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
-  std::istringstream iss(cmdLine);
-  std::string token;
   IrcCommand ircCommand;
-  std::vector<std::string> tokens;
-  ircCommand.prefix = config::serverName;
-  ircCommand.trailing = "";
+  ircCommand.prefix = "";
+  ircCommand.command = "";
+  ircCommand.params = std::vector<std::string>();
+  ircCommand.lastParamIsTrailing = false;
 
-  while (std::getline(iss, token, ' ')) {
-    if (token.empty())
-      continue;
-    if (token[0] == ':') {
-      ircCommand.trailing = token.substr(1);
-      continue;
+  std::string tempLine = cmdLine;
+  std::string trailingPart;
+
+  // parse prefix
+  if (!tempLine.empty() && tempLine[0] == ':') {
+    std::string::size_type spacePos = tempLine.find(' ');
+    if (spacePos != std::string::npos) {
+      ircCommand.prefix = tempLine.substr(1, spacePos - 1);
+      tempLine = tempLine.substr(spacePos + 1);
+    } else {
+      // wrong format
+      ircCommand.command = "";
+      return ircCommand;
     }
-    tokens.push_back(token);
   }
 
-  ircCommand.command = tokens[0];
-  ircCommand.params = std::vector<std::string>(tokens.begin() + 1, tokens.end());
+  // parse trailing
+  std::string::size_type trailingPos = tempLine.find(" :");
+  if (trailingPos != std::string::npos) {
+    trailingPart = tempLine.substr(trailingPos + 2);
+    tempLine = tempLine.substr(0, trailingPos);
+    ircCommand.lastParamIsTrailing = true;
+  }
+
+  // parse command and params
+  std::istringstream iss(tempLine);
+  std::string token;
+
+  // first token is command
+  if (iss >> token) {
+    ircCommand.command = token;
+  }
+  // rest tokens are params
+  while (iss >> token) {
+    ircCommand.params.push_back(token);
+  }
+
+  // if trailing, add it to params
+  if (ircCommand.lastParamIsTrailing) {
+    ircCommand.params.push_back(trailingPart);
+  }
+
   return ircCommand;
 }
 
@@ -53,10 +80,17 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
 void CommandHandler::processCommand(Server &server, Client &client,
                                     const IrcCommand &command) {
   std::cout << "debug: Received command from client " << client.getFd()
-            << ":\n" << command.command << std::endl;
+            << ":\nprefix: " << command.prefix
+            << "\ncommand: " << command.command << "\n";
+  for (size_t i = 0; i < command.params.size(); i++) {
+    std::cout << "param" << i << ": " << command.params[i] << "\n";
+  }
+  std::cout << std::endl;
 
   if (commandMap_.find(command.command) == commandMap_.end()) {
-    ServerHandler::queueMessage(server, client, ":myserver 421 " + client.getNickname() + " " + command.command + " :Unknown command\r\n");
+    ServerHandler::queueMessage(server, client,
+                                ":myserver 421 " + client.getNickname() + " " +
+                                    command.command + " :Unknown command\r\n");
     return;
   }
 

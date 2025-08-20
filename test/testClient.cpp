@@ -31,8 +31,12 @@ int main(int argc, char **argv) {
   char buffer[1024];
   while (true) {
     std::cin.getline(buffer, 1024);
-    send(fd, buffer, strlen(buffer), 0);
-    memset(buffer, 0, 1024);
+    if (!std::cin) {
+      break;
+    }
+    std::string bufferStr(buffer);
+    bufferStr += "\r\n";
+    send(fd, bufferStr.c_str(), bufferStr.length(), 0);
   }
 
   return 0;

@@ -11,7 +11,7 @@ struct IrcCommand {
   std::string prefix;
   std::string command;
   std::vector<std::string> params;
-  std::string trailing;
+  bool lastParamIsTrailing;
 };
 
 // TODO
