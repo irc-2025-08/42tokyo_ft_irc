@@ -4,6 +4,7 @@
 #include "../includes/ServerHandler.hpp"
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 // TODO
 
@@ -50,6 +51,8 @@ IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
   // first token is command
   if (iss >> token) {
     ircCommand.command = token;
+    std::transform(ircCommand.command.begin(), ircCommand.command.end(),
+                   ircCommand.command.begin(), ::toupper);
   }
   // rest tokens are params
   while (iss >> token) {
