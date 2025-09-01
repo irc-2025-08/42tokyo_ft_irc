@@ -5,7 +5,7 @@
 
 // TODO
 bool CommandHandler::pingCmd(Server &server, Client &client,
-                                 const IrcCommand &command) {
+                                 const IrcMessage &command) {
   (void)command;
   ServerHandler::queueMessage(server, client, ":myserver PONG myserver :" + client.getNickname() + "\r\n");
   return true;

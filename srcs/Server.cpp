@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include "../includes/CommandHandler.hpp"
 #include "../includes/ServerHandler.hpp"
 #include "../includes/ServerUtils.hpp"
 #include "../includes/config.hpp"
@@ -12,7 +13,7 @@
 #include <unistd.h>
 
 Server::Server(int port, std::string password)
-    : port_(port), password_(password), serverStatus_(SERV_STOPPED) {
+    : port_(port), password_(password), serverName_(config::serverName), serverStatus_(SERV_STOPPED) {
   std::cout << "[INFO] ircd: Initializing server..." << std::endl;
 
   // create a socket and bind it to the port
@@ -33,6 +34,9 @@ Server::Server(int port, std::string password)
   if (ServerUtils::addEpollEvent(epollFd_, socketFd_, EPOLLIN) < 0)
     throw std::runtime_error("Failed to add socket to epoll");
 
+  // initialize irc commands map
+  CommandHandler::initCommandMap();
+
   std::cout << "[INFO] ircd: Server initialized successfully" << std::endl;
 }
 
@@ -52,6 +56,10 @@ void Server::setStatus(ServerStatus status) {
 }
 
 Server::ServerStatus Server::getStatus() const { return serverStatus_; }
+
+std::string Server::getServerName() const { return serverName_; }
+
+std::map<int, Client> Server::getClientsMap() const { return clients_; }
 
 void Server::run() {
   if (getStatus() == SERV_ERROR)

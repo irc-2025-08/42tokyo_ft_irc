@@ -2,7 +2,7 @@
 #include <cstring>
 #include <sys/epoll.h>
 
-Client::Client() : fd_(-1), nickname_("") {}
+Client::Client() : fd_(-1), nickname_("*") {}
 
 Client::Client(int fd, sockaddr_in addr) : fd_(fd), addr_(addr), nickname_("") {}
 

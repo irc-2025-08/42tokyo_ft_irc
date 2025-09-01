@@ -20,10 +20,13 @@ public:
   void run();
   ServerStatus getStatus() const;
   void setStatus(ServerStatus status);
+  std::string getServerName() const;
+  std::map<int, Client> getClientsMap() const;
 
 private:
   int port_;
   std::string password_;
+  std::string serverName_;
   ServerStatus serverStatus_;
   int socketFd_;
   int epollFd_;

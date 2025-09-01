@@ -1,20 +1,12 @@
 #pragma once
 
+#include "IrcMessage.hpp"
 #include <map>
 #include <string>
-#include <vector>
 
 class Server;
 class Client;
 
-struct IrcCommand {
-  std::string prefix;
-  std::string command;
-  std::vector<std::string> params;
-  bool lastParamIsTrailing;
-};
-
-// TODO
 class CommandHandler {
 public:
   /**
@@ -24,16 +16,28 @@ public:
    */
   static void parseAndProcessCommand(Server &server, Client &client);
 
+  /**
+   * @brief initialize the command map, should be called before running the
+   * server
+   */
   static void initCommandMap();
 
 private:
-  static std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)> commandMap_;
+  static std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
+      commandMap_;
 
-  static IrcCommand parseCommandLine(const std::string &cmdLine);
+  /**
+   * @brief reply to the client
+   */
+  static void reply(Server &server, Client &client, const IrcMessage &message);
+
+  static IrcMessage parseCommandLine(const std::string &cmdLine);
 
   static void processCommand(Server &server, Client &client,
-                             const IrcCommand &command);
+                             const IrcMessage &command);
 
   static bool pingCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                      const IrcMessage &command);
+  static bool nickCmd(Server &server, Client &client,
+                      const IrcMessage &command);
 };

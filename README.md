@@ -16,13 +16,13 @@ irssi
 ### test with irssi
 ```
 /connect localhost <port>
-/RAWLOG OPEN debug.log 
+/RAWLOG OPEN debug.log
 ```
 
 ### compare with other server
 ```
 /connect DALNET
-/RAWLOG OPEN debug2.log 
+/RAWLOG OPEN debug2.log
 ```
 
 ### useful irc commands

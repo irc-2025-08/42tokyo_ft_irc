@@ -2,19 +2,22 @@
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/ServerHandler.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
 // TODO
 
-std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)>
+std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
     CommandHandler::commandMap_;
 
-void CommandHandler::initCommandMap() { commandMap_["PING"] = pingCmd; }
+void CommandHandler::initCommandMap() {
+  commandMap_["PING"] = pingCmd;
+  commandMap_["NICK"] = nickCmd;
+}
 
-IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
-  IrcCommand ircCommand;
+IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
+  IrcMessage ircCommand;
   ircCommand.prefix = "";
   ircCommand.command = "";
   ircCommand.params = std::vector<std::string>();
@@ -73,7 +76,7 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
     std::string cmdLine = client.recvBuffer_.substr(0, pos);
     client.recvBuffer_.erase(0, pos + 2);
 
-    IrcCommand command = parseCommandLine(cmdLine);
+    IrcMessage command = parseCommandLine(cmdLine);
     processCommand(server, client, command);
 
     pos = client.recvBuffer_.find("\r\n");
@@ -81,7 +84,7 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
 }
 
 void CommandHandler::processCommand(Server &server, Client &client,
-                                    const IrcCommand &command) {
+                                    const IrcMessage &command) {
   std::cout << "debug: Received command from client " << client.getFd()
             << ":\nprefix: " << command.prefix
             << "\ncommand: " << command.command << "\n";
@@ -99,4 +102,26 @@ void CommandHandler::processCommand(Server &server, Client &client,
 
   commandMap_[command.command](server, client, command);
   return;
+}
+
+void CommandHandler::reply(Server &server, Client &client,
+                           const IrcMessage &message) {
+  std::string reply = "";
+  if (!message.prefix.empty()) {
+    reply += ":" + message.prefix + " ";
+  }
+
+  reply += message.command + " ";
+
+  for (size_t i = 0; i < message.params.size() - 1; i++) {
+    reply += message.params[i] + " ";
+  }
+
+  if (message.lastParamIsTrailing) {
+    reply += ":" + message.params.back() + "\r\n";
+  } else {
+    reply += message.params.back() + "\r\n";
+  }
+
+  ServerHandler::queueMessage(server, client, reply);
 }
