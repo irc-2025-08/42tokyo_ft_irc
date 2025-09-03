@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/04 00:54:50 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/04 01:11:16 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ int CommandHandler::reply(Server &server, Client &client,
     reply += message.params[i] + " ";
   }
 
-  if (message.lastParamIsTrailing) {
+  if (message.params.size() > 0 && message.lastParamIsTrailing) {
     reply += ":" + message.params.back() + "\r\n";
   } else {
     reply += message.params.back() + "\r\n";
