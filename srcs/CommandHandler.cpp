@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:25 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/04 00:54:50 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,9 @@ void CommandHandler::processCommand(Server &server, Client &client,
   std::cout << std::endl;
 
   if (commandMap_.find(command.command) == commandMap_.end()) {
-    ServerHandler::queueMessage(server, client,
-                                ":myserver 421 " + client.getNickname() + " " +
-                                    command.command + " :Unknown command\r\n");
+    IrcMessage msg = createIrcMessage(server.getServerName(), "421",
+                                      command.command + " :Unknown command");
+    reply(server, client, msg);
     return;
   }
 
@@ -116,8 +116,8 @@ void CommandHandler::processCommand(Server &server, Client &client,
   return;
 }
 
-void CommandHandler::reply(Server &server, Client &client,
-                           const IrcMessage &message) {
+int CommandHandler::reply(Server &server, Client &client,
+                          const IrcMessage &message) {
   std::string reply = "";
   if (!message.prefix.empty()) {
     reply += ":" + message.prefix + " ";
@@ -135,5 +135,21 @@ void CommandHandler::reply(Server &server, Client &client,
     reply += message.params.back() + "\r\n";
   }
 
-  ServerHandler::queueMessage(server, client, reply);
+  return ServerHandler::queueMessage(server, client, reply);
+}
+
+IrcMessage CommandHandler::createIrcMessage(const std::string &prefix,
+                                            const std::string &command,
+                                            const std::string &paramsStr) {
+  std::string cmdline = "";
+  if (!prefix.empty()) {
+    cmdline += ":" + prefix + " ";
+  }
+  cmdline += command + " " + paramsStr + "\r\n";
+  return parseCommandLine(cmdline);
+}
+
+IrcMessage CommandHandler::createIrcMessage(const std::string &command,
+                                            const std::string &paramsStr) {
+  return createIrcMessage("", command, paramsStr);
 }

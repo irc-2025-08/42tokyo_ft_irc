@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:44 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/04 00:39:47 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ private:
   /**
    * @brief reply to the client
    */
-  static void reply(Server &server, Client &client, const IrcMessage &message);
+  static int reply(Server &server, Client &client, const IrcMessage &message);
+
+  static IrcMessage createIrcMessage(const std::string &prefix, const std::string &command, const std::string &paramsStr);
+  static IrcMessage createIrcMessage(const std::string &command, const std::string &paramsStr);
 
   static IrcMessage parseCommandLine(const std::string &cmdLine);
 
