@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/04 01:11:16 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/05 23:28:59 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
 void CommandHandler::initCommandMap() {
   commandMap_["PING"] = pingCmd;
   commandMap_["NICK"] = nickCmd;
+  commandMap_["CAP"] = capCmd;
+  commandMap_["USER"] = userCmd;
 }
 
 IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
@@ -89,6 +91,11 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
     client.recvBuffer_.erase(0, pos + 2);
 
     IrcMessage command = parseCommandLine(cmdLine);
+    if (!isIrcMessageValid(command)) {
+      std::cerr << "[WARN] Received illegal message from client " << client.getFd() << ": " << cmdLine << std::endl;
+      continue;
+    }
+
     processCommand(server, client, command);
 
     pos = client.recvBuffer_.find("\r\n");
@@ -152,4 +159,10 @@ IrcMessage CommandHandler::createIrcMessage(const std::string &prefix,
 IrcMessage CommandHandler::createIrcMessage(const std::string &command,
                                             const std::string &paramsStr) {
   return createIrcMessage("", command, paramsStr);
+}
+
+// to be implemented
+bool CommandHandler::isIrcMessageValid(const IrcMessage &message) {
+  (void)message;
+  return true;
 }

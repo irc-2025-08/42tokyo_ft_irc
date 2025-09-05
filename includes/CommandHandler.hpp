@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/04 00:39:47 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/05 23:24:22 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,6 @@ public:
    */
   static void initCommandMap();
 
-private:
-  static std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
-      commandMap_;
-
   /**
    * @brief reply to the client
    */
@@ -46,7 +42,13 @@ private:
   static IrcMessage createIrcMessage(const std::string &prefix, const std::string &command, const std::string &paramsStr);
   static IrcMessage createIrcMessage(const std::string &command, const std::string &paramsStr);
 
+private:
+  static std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
+      commandMap_;
+
   static IrcMessage parseCommandLine(const std::string &cmdLine);
+
+  static bool isIrcMessageValid(const IrcMessage &message);
 
   static void processCommand(Server &server, Client &client,
                              const IrcMessage &command);
@@ -54,5 +56,9 @@ private:
   static bool pingCmd(Server &server, Client &client,
                       const IrcMessage &command);
   static bool nickCmd(Server &server, Client &client,
+                      const IrcMessage &command);
+  static bool capCmd(Server &server, Client &client,
+                      const IrcMessage &command);
+  static bool userCmd(Server &server, Client &client,
                       const IrcMessage &command);
 };

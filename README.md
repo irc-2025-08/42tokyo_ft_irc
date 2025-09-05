@@ -1,6 +1,8 @@
 # ft_irc
 for development
 
+Document: https://datatracker.ietf.org/doc/html/rfc1459
+
 ### start server
 ```
 make

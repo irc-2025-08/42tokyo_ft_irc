@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:40 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:41 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/05 23:27:32 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ public:
   Client();
   Client(int fd, sockaddr_in addr);
   ~Client();
-  Client(const Client &other);
-  Client &operator=(const Client &other);
 
   int getFd() const;
   std::string getNickname() const;
   void setNickname(const std::string &nickname);
+  Client(const Client &other);
+  Client &operator=(const Client &other);
 
 private:
   int fd_;
