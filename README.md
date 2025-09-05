@@ -1,7 +1,10 @@
 # ft_irc
 for development
 
-Document: https://datatracker.ietf.org/doc/html/rfc1459
+Helpful documents:
+- http://chi.cs.uchicago.edu/chirc/irc.html
+- https://datatracker.ietf.org/doc/html/rfc2812
+- https://qiita.com/gu-chi?page=1
 
 ### start server
 ```
