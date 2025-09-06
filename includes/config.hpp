@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:45 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:45 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:22:56 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,6 @@ namespace config {
   // I/O buffer size for recv() and send()
   const int ioBufferSize = 1024;
 
+  // Server name
   const std::string serverName = "myserver";
 }

@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:40 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/05 23:27:32 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:22:28 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 class Server;
 
-// TODO
 class Client {
 public:
   friend class CommandHandler;
