@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:49:55 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 22:24:57 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ public:
   static void parseAndProcessCommand(Server &server, Client &client);
 
   /**
-   * @brief parse one command line string
+   * @brief parse one command line string without \r\n
    */
   static IrcMessage parseCommandLine(const std::string &cmdLine);
 

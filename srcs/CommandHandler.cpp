@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:38:45 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 22:36:11 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,17 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
     client.recvBuffer_.erase(0, pos + 2);
 
     IrcMessage command = parseCommandLine(cmdLine);
+
+    std::cout << "[DEBUG] Received message from client " << client.getFd()
+              << ": \"" << cmdLine << "\"\n"
+              << "        prefix: \"" << command.prefix << "\", command: \""
+              << command.command << "\", params: [";
+    for (size_t i = 0; i < command.params.size(); i++) {
+      std::cout << "\"" << command.params[i] << "\""
+                << (i == command.params.size() - 1 ? "" : ", ");
+    }
+    std::cout << "]" << std::endl;
+
     if (!CommandUtils::isIrcMessageValid(command)) {
       std::cerr << "[WARN] Received illegal message from client "
                 << client.getFd() << ": " << cmdLine << std::endl;
@@ -102,14 +113,6 @@ IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
 
 void CommandHandler::processCommand(Server &server, Client &client,
                                     const IrcMessage &command) {
-  std::cout << "debug: Received command from client " << client.getFd()
-            << ":\nprefix: " << command.prefix
-            << "\ncommand: " << command.command << "\n";
-  for (size_t i = 0; i < command.params.size(); i++) {
-    std::cout << "param" << i << ": " << command.params[i] << "\n";
-  }
-  std::cout << std::endl;
-
   if (commandMap_.find(command.command) == commandMap_.end()) {
     IrcMessage msg = CommandUtils::createIrcMessage(
         server.getServerName(), "421", command.command + " :Unknown command");

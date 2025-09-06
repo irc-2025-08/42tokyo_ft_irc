@@ -6,13 +6,14 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:54:44 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 22:26:16 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/CommandUtils.hpp"
 #include "../includes/CommandHandler.hpp"
 #include "../includes/ServerHandler.hpp"
+#include <iostream>
 
 int CommandUtils::sendWelcomeMessage(Server &server, Client &client) {
   IrcMessage msg =
@@ -37,10 +38,15 @@ int CommandUtils::reply(Server &server, Client &client,
   }
 
   if (message.params.size() > 0 && message.lastParamIsTrailing) {
-    reply += ":" + message.params.back() + "\r\n";
+    reply += ":" + message.params.back();
   } else {
-    reply += message.params.back() + "\r\n";
+    reply += message.params.back();
   }
+
+  std::cout << "[DEBUG] Sent message to client " << client.getFd() << ": "
+            << "\"" << reply << "\"\n";
+
+  reply += "\r\n";
 
   return ServerHandler::queueMessage(server, client, reply);
 }
@@ -52,7 +58,7 @@ IrcMessage CommandUtils::createIrcMessage(const std::string &prefix,
   if (!prefix.empty()) {
     cmdline += ":" + prefix + " ";
   }
-  cmdline += command + " " + paramsStr + "\r\n";
+  cmdline += command + " " + paramsStr;
   return CommandHandler::parseCommandLine(cmdline);
 }
 
