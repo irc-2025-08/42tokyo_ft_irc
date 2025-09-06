@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:45 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:22:56 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:55:15 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,18 @@
 #include <string>
 
 namespace config {
-  // listen() queue length: maximum pending connections
-  const int backlog = 100;
+// listen() queue length: maximum pending connections
+const int backlog = 100;
 
-  // I/O buffer size for send() and recv()
-  const int bufferSize = 1024;
+// I/O buffer size for send() and recv()
+const int bufferSize = 1024;
 
-  // Maximum events per epoll_wait call
-  const int maxEvents = 100;
+// Maximum events per epoll_wait call
+const int maxEvents = 100;
 
-  // I/O buffer size for recv() and send()
-  const int ioBufferSize = 1024;
+// I/O buffer size for recv() and send()
+const int ioBufferSize = 1024;
 
-  // Server name
-  const std::string serverName = "myserver";
-}
+// Server name
+const std::string serverName = "myserver";
+} // namespace config

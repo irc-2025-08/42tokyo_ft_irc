@@ -6,17 +6,17 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:26 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:28 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:55:01 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
 #include "../includes/CommandHandler.hpp"
+#include "../includes/Server.hpp"
+#include <cerrno>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <string>
-#include <cstring>
-#include <cerrno>
 
 int main(int argc, char **argv) {
   if (argc != 3) {

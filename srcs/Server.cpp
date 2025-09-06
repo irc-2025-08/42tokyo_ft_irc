@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:29 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:30 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:57:06 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 #include <unistd.h>
 
 Server::Server(int port, std::string password)
-    : port_(port), password_(password), serverName_(config::serverName), serverStatus_(SERV_STOPPED) {
+    : port_(port), password_(password), serverName_(config::serverName),
+      serverStatus_(SERV_STOP) {
   std::cout << "[INFO] ircd: Initializing server..." << std::endl;
 
   // create a socket and bind it to the port

@@ -6,16 +6,16 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:35 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/02 00:18:36 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:54:56 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ServerUtils.hpp"
 #include "../includes/config.hpp"
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <unistd.h>
 
 int ServerUtils::setNonblock(const int fd) {

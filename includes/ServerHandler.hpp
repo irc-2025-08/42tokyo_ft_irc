@@ -6,14 +6,14 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:50 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:23:35 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:55:11 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Server.hpp"
 #include "Client.hpp"
+#include "Server.hpp"
 
 class ServerHandler {
 public:
@@ -23,13 +23,14 @@ public:
    * @return 0 on success, -1 on error
    * @note if failed, should close the client connection
    */
-  static int queueMessage(Server &server, Client &client, const std::string &message);
+  static int queueMessage(Server &server, Client &client,
+                          const std::string &message);
 
   /**
-  * @brief clear the send buffer and reset epoll event
-  * @return 0 on success, -1 on error
-  * @note if failed, should close the client connection
-  */
+   * @brief clear the send buffer and reset epoll event
+   * @return 0 on success, -1 on error
+   * @note if failed, should close the client connection
+   */
   static int onSendComplete(Server &server, Client &client);
 
   /**
