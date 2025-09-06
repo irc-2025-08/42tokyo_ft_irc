@@ -6,28 +6,44 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/05 23:28:59 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 21:38:45 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/CommandHandler.hpp"
-#include "../includes/Client.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/ServerHandler.hpp"
+#include "../includes/Command.hpp"
+#include "../includes/CommandUtils.hpp"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-
-// TODO
 
 std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
     CommandHandler::commandMap_;
 
 void CommandHandler::initCommandMap() {
-  commandMap_["PING"] = pingCmd;
-  commandMap_["NICK"] = nickCmd;
-  commandMap_["CAP"] = capCmd;
-  commandMap_["USER"] = userCmd;
+  commandMap_["PING"] = Command::ping;
+  commandMap_["NICK"] = Command::nick;
+  commandMap_["CAP"] = Command::cap;
+  commandMap_["USER"] = Command::user;
+}
+
+void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
+  std::string::size_type pos = client.recvBuffer_.find("\r\n");
+  while (pos != std::string::npos) {
+    std::string cmdLine = client.recvBuffer_.substr(0, pos);
+    client.recvBuffer_.erase(0, pos + 2);
+
+    IrcMessage command = parseCommandLine(cmdLine);
+    if (!CommandUtils::isIrcMessageValid(command)) {
+      std::cerr << "[WARN] Received illegal message from client "
+                << client.getFd() << ": " << cmdLine << std::endl;
+      continue;
+    }
+
+    processCommand(server, client, command);
+
+    pos = client.recvBuffer_.find("\r\n");
+  }
 }
 
 IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
@@ -84,24 +100,6 @@ IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
   return ircCommand;
 }
 
-void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
-  std::string::size_type pos = client.recvBuffer_.find("\r\n");
-  while (pos != std::string::npos) {
-    std::string cmdLine = client.recvBuffer_.substr(0, pos);
-    client.recvBuffer_.erase(0, pos + 2);
-
-    IrcMessage command = parseCommandLine(cmdLine);
-    if (!isIrcMessageValid(command)) {
-      std::cerr << "[WARN] Received illegal message from client " << client.getFd() << ": " << cmdLine << std::endl;
-      continue;
-    }
-
-    processCommand(server, client, command);
-
-    pos = client.recvBuffer_.find("\r\n");
-  }
-}
-
 void CommandHandler::processCommand(Server &server, Client &client,
                                     const IrcMessage &command) {
   std::cout << "debug: Received command from client " << client.getFd()
@@ -113,56 +111,12 @@ void CommandHandler::processCommand(Server &server, Client &client,
   std::cout << std::endl;
 
   if (commandMap_.find(command.command) == commandMap_.end()) {
-    IrcMessage msg = createIrcMessage(server.getServerName(), "421",
-                                      command.command + " :Unknown command");
-    reply(server, client, msg);
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "421", command.command + " :Unknown command");
+    CommandUtils::reply(server, client, msg);
     return;
   }
 
   commandMap_[command.command](server, client, command);
   return;
-}
-
-int CommandHandler::reply(Server &server, Client &client,
-                          const IrcMessage &message) {
-  std::string reply = "";
-  if (!message.prefix.empty()) {
-    reply += ":" + message.prefix + " ";
-  }
-
-  reply += message.command + " ";
-
-  for (size_t i = 0; i < message.params.size() - 1; i++) {
-    reply += message.params[i] + " ";
-  }
-
-  if (message.params.size() > 0 && message.lastParamIsTrailing) {
-    reply += ":" + message.params.back() + "\r\n";
-  } else {
-    reply += message.params.back() + "\r\n";
-  }
-
-  return ServerHandler::queueMessage(server, client, reply);
-}
-
-IrcMessage CommandHandler::createIrcMessage(const std::string &prefix,
-                                            const std::string &command,
-                                            const std::string &paramsStr) {
-  std::string cmdline = "";
-  if (!prefix.empty()) {
-    cmdline += ":" + prefix + " ";
-  }
-  cmdline += command + " " + paramsStr + "\r\n";
-  return parseCommandLine(cmdline);
-}
-
-IrcMessage CommandHandler::createIrcMessage(const std::string &command,
-                                            const std::string &paramsStr) {
-  return createIrcMessage("", command, paramsStr);
-}
-
-// to be implemented
-bool CommandHandler::isIrcMessageValid(const IrcMessage &message) {
-  (void)message;
-  return true;
 }
