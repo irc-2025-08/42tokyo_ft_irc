@@ -1,42 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CommandHandler.hpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 22:24:57 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 
+#include "IrcMessage.hpp"
 #include <map>
 #include <string>
-#include <vector>
 
 class Server;
 class Client;
 
-struct IrcCommand {
-  std::string prefix;
-  std::string command;
-  std::vector<std::string> params;
-  bool lastParamIsTrailing;
-};
-
-// TODO
 class CommandHandler {
 public:
   /**
+   * @brief initialize commands, should be called before running the server
+   */
+  static void initCommandMap();
+
+  /**
    * @brief parse the command and process it
-   * @param server the server
-   * @param client the client
    */
   static void parseAndProcessCommand(Server &server, Client &client);
 
-  static void initCommandMap();
+  /**
+   * @brief parse one command line string without \r\n
+   */
+  static IrcMessage parseCommandLine(const std::string &cmdLine);
 
 private:
-  static std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)> commandMap_;
-
-  static IrcCommand parseCommandLine(const std::string &cmdLine);
+  static std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
+      commandMap_;
 
   static void processCommand(Server &server, Client &client,
-                             const IrcCommand &command);
+                             const IrcMessage &command);
 
   static bool pingCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                                 const IrcMessage &command);
 
   static bool passCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                                 const IrcMessage &command);
 };

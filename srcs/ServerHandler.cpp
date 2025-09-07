@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerHandler.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:32 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 22:19:29 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/ServerHandler.hpp"
 #include "../includes/CommandHandler.hpp"
 #include "../includes/ServerUtils.hpp"
@@ -107,9 +119,6 @@ void ServerHandler::handleSend(Server &server, Client &client) {
   if (send(client.getFd(), client.sendBuffer_.c_str(),
            client.sendBuffer_.size(), 0) < 0)
     std::cerr << "[WARN] ircd: Failed to send data to client" << std::endl;
-
-  std::cout << "debug: Sent message to client " << client.getFd() << ":\n"
-            << client.sendBuffer_ << std::endl;
 
   if (onSendComplete(server, client) < 0)
     closeClientConnection(server, client);

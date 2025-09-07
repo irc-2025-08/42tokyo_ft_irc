@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:40 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 21:22:28 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 
 #include <netinet/in.h>
@@ -5,17 +17,13 @@
 
 class Server;
 
-// TODO
 class Client {
 public:
+  friend class CommandHandler;
+  friend class ServerHandler;
   Client();
   Client(int fd, sockaddr_in addr);
   ~Client();
-  Client(const Client &other);
-  Client &operator=(const Client &other);
-
-  std::string recvBuffer_;
-  std::string sendBuffer_;
 
   int getFd() const;
   std::string getNickname() const;
@@ -23,6 +31,8 @@ public:
   bool isRegistered() const;
   bool isPasswordProvided() const;
   void setPasswordProvided(bool provided);
+  Client(const Client &other);
+  Client &operator=(const Client &other);
 
 private:
   int fd_;
@@ -30,4 +40,6 @@ private:
   std::string nickname_;
   bool registered_;
   bool passwordProvided_;
+  std::string recvBuffer_;
+  std::string sendBuffer_;
 };

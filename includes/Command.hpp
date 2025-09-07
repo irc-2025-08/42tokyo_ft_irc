@@ -1,32 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   config.hpp                                         :+:      :+:    :+:   */
+/*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/02 00:18:45 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:55:15 by yxu              ###   ########.fr       */
+/*   Created: 2025/09/06 21:50:37 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 21:50:38 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <string>
+#include "Client.hpp"
+#include "IrcMessage.hpp"
+#include "Server.hpp"
 
-namespace config {
-// listen() queue length: maximum pending connections
-const int backlog = 100;
-
-// I/O buffer size for send() and recv()
-const int bufferSize = 1024;
-
-// Maximum events per epoll_wait call
-const int maxEvents = 100;
-
-// I/O buffer size for recv() and send()
-const int ioBufferSize = 1024;
-
-// Server name
-const std::string serverName = "myserver";
-} // namespace config
+class Command {
+public:
+  static bool ping(Server &server, Client &client, const IrcMessage &command);
+  static bool nick(Server &server, Client &client, const IrcMessage &command);
+  static bool cap(Server &server, Client &client, const IrcMessage &command);
+  static bool user(Server &server, Client &client, const IrcMessage &command);
+};
