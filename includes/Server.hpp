@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Client.hpp"
+#include "Channel.hpp"
 #include <map>
 #include <string>
+#include <vector>
 
 class ServerHandler;
 
@@ -28,6 +30,7 @@ private:
   int socketFd_;
   int epollFd_;
   std::map<int, Client> clients_;
+  std::vector<Channel> channels_;
 
   /**
    * @brief event loop
