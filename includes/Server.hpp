@@ -22,6 +22,10 @@ public:
   void run();
   ServerStatus getStatus() const;
   void setStatus(ServerStatus status);
+  
+  // Channel management methods
+  Channel* findChannel(const std::string& channelName);
+  void addChannel(const std::string& channelName);
 
 private:
   int port_;

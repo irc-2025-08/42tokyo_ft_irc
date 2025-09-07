@@ -11,7 +11,10 @@
 std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)>
     CommandHandler::commandMap_;
 
-void CommandHandler::initCommandMap() { commandMap_["PING"] = pingCmd; }
+void CommandHandler::initCommandMap() { 
+  commandMap_["PING"] = pingCmd;
+  commandMap_["JOIN"] = joinCmd;
+}
 
 IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
   IrcCommand ircCommand;

@@ -36,4 +36,6 @@ private:
 
   static bool pingCmd(Server &server, Client &client,
                                  const IrcCommand &command);
+  static bool joinCmd(Server &server, Client &client,
+                                 const IrcCommand &command);
 };

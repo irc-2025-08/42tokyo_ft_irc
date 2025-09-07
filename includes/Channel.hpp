@@ -8,6 +8,11 @@ class Channel {
 public:
   Channel(const std::string &name);
   ~Channel();
+  
+  // Member management methods
+  void addMember(const std::string& nickname);
+  bool hasMember(const std::string& nickname) const;
+  const std::string& getName() const;
 
 private:
   std::string channel_name;
