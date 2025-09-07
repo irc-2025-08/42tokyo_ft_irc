@@ -33,8 +33,9 @@ void Channel::addMember(const std::string& nickname) {
 }
 
 bool Channel::hasMember(const std::string& nickname) const {
-  for (const auto& member : channel_member_list) {
-    if (member == nickname) {
+  for (std::vector<std::string>::const_iterator it = channel_member_list.begin();
+       it != channel_member_list.end(); ++it) {
+    if (*it == nickname) {
       return true;
     }
   }

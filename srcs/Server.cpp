@@ -103,14 +103,15 @@ void Server::eventLoop() {
 
 // Channel management methods
 Channel* Server::findChannel(const std::string& channelName) {
-  for (auto& channel : channels_) {
-    if (channel.getName() == channelName) {
-      return &channel;
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->getName() == channelName) {
+      return &(*it);
     }
   }
-  return nullptr;
+  return NULL;
 }
 
 void Server::addChannel(const std::string& channelName) {
-  channels_.emplace_back(channelName);
+  channels_.push_back(Channel(channelName));
 }
