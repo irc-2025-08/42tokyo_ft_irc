@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 22:26:16 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/06 22:59:40 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 int CommandUtils::sendWelcomeMessage(Server &server, Client &client) {
   IrcMessage msg =
       createIrcMessage(server.getServerName(), "001",
-                       client.getNickname() + " :Welcome to the IRC server," +
+                       client.getNickname() + " :Welcome to the IRC server, " +
                            client.getNickname());
   reply(server, client, msg);
   return 0;
@@ -43,7 +43,7 @@ int CommandUtils::reply(Server &server, Client &client,
     reply += message.params.back();
   }
 
-  std::cout << "[DEBUG] Sent message to client " << client.getFd() << ": "
+  std::cout << "[DEBUG] Sending message to client " << client.getFd() << ": "
             << "\"" << reply << "\"\n";
 
   reply += "\r\n";
