@@ -20,9 +20,14 @@ public:
   int getFd() const;
   std::string getNickname() const;
   void setNickname(const std::string &nickname);
+  bool isRegistered() const;
+  bool isPasswordProvided() const;
+  void setPasswordProvided(bool provided);
 
 private:
   int fd_;
   sockaddr_in addr_;
   std::string nickname_;
+  bool registered_;
+  bool passwordProvided_;
 };

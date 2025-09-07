@@ -36,4 +36,7 @@ private:
 
   static bool pingCmd(Server &server, Client &client,
                                  const IrcCommand &command);
+
+  static bool passCmd(Server &server, Client &client,
+                                 const IrcCommand &command);
 };

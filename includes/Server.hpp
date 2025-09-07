@@ -20,6 +20,7 @@ public:
   void run();
   ServerStatus getStatus() const;
   void setStatus(ServerStatus status);
+  std::string getPassword() const;
 
 private:
   int port_;

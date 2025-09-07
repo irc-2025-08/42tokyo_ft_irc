@@ -53,6 +53,8 @@ void Server::setStatus(ServerStatus status) {
 
 Server::ServerStatus Server::getStatus() const { return serverStatus_; }
 
+std::string Server::getPassword() const { return password_; }
+
 void Server::run() {
   if (getStatus() == SERV_ERROR)
     return;
