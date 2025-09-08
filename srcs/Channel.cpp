@@ -45,3 +45,15 @@ bool Channel::hasMember(const std::string& nickname) const {
 const std::string& Channel::getName() const {
   return channel_name;
 }
+
+// Operator management methods
+void Channel::addOperator(const std::string& nickname) {
+  // 重複チェック
+  for (std::vector<std::string>::const_iterator it = channel_operator_list.begin();
+       it != channel_operator_list.end(); ++it) {
+    if (*it == nickname) {
+      return;  // 既にオペレーターの場合は追加しない
+    }
+  }
+  channel_operator_list.push_back(nickname);
+}
