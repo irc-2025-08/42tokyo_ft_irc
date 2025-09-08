@@ -1,23 +1,65 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CommandHandler.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 22:36:11 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/CommandHandler.hpp"
-#include "../includes/Client.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/ServerHandler.hpp"
+#include "../includes/Command.hpp"
+#include "../includes/CommandUtils.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
-// TODO
-
-std::map<std::string, bool (*)(Server &, Client &, const IrcCommand &)>
+std::map<std::string, bool (*)(Server &, Client &, const IrcMessage &)>
     CommandHandler::commandMap_;
 
-void CommandHandler::initCommandMap() { 
-  commandMap_["PING"] = pingCmd;
-  commandMap_["JOIN"] = joinCmd;
+void CommandHandler::initCommandMap() {
+  commandMap_["PING"] = Command::ping;
+  commandMap_["NICK"] = Command::nick;
+  commandMap_["CAP"] = Command::cap;
+  commandMap_["USER"] = Command::user;
+  commandMap_["JOIN"] = Command:joinCmd;
 }
 
-IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
-  IrcCommand ircCommand;
+void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
+  std::string::size_type pos = client.recvBuffer_.find("\r\n");
+  while (pos != std::string::npos) {
+    std::string cmdLine = client.recvBuffer_.substr(0, pos);
+    client.recvBuffer_.erase(0, pos + 2);
+
+    IrcMessage command = parseCommandLine(cmdLine);
+
+    std::cout << "[DEBUG] Received message from client " << client.getFd()
+              << ": \"" << cmdLine << "\"\n"
+              << "        prefix: \"" << command.prefix << "\", command: \""
+              << command.command << "\", params: [";
+    for (size_t i = 0; i < command.params.size(); i++) {
+      std::cout << "\"" << command.params[i] << "\""
+                << (i == command.params.size() - 1 ? "" : ", ");
+    }
+    std::cout << "]" << std::endl;
+
+    if (!CommandUtils::isIrcMessageValid(command)) {
+      std::cerr << "[WARN] Received illegal message from client "
+                << client.getFd() << ": " << cmdLine << std::endl;
+      continue;
+    }
+
+    processCommand(server, client, command);
+
+    pos = client.recvBuffer_.find("\r\n");
+  }
+}
+
+IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
+  IrcMessage ircCommand;
   ircCommand.prefix = "";
   ircCommand.command = "";
   ircCommand.params = std::vector<std::string>();
@@ -70,33 +112,12 @@ IrcCommand CommandHandler::parseCommandLine(const std::string &cmdLine) {
   return ircCommand;
 }
 
-void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
-  std::string::size_type pos = client.recvBuffer_.find("\r\n");
-  while (pos != std::string::npos) {
-    std::string cmdLine = client.recvBuffer_.substr(0, pos);
-    client.recvBuffer_.erase(0, pos + 2);
-
-    IrcCommand command = parseCommandLine(cmdLine);
-    processCommand(server, client, command);
-
-    pos = client.recvBuffer_.find("\r\n");
-  }
-}
-
 void CommandHandler::processCommand(Server &server, Client &client,
-                                    const IrcCommand &command) {
-  std::cout << "debug: Received command from client " << client.getFd()
-            << ":\nprefix: " << command.prefix
-            << "\ncommand: " << command.command << "\n";
-  for (size_t i = 0; i < command.params.size(); i++) {
-    std::cout << "param" << i << ": " << command.params[i] << "\n";
-  }
-  std::cout << std::endl;
-
+                                    const IrcMessage &command) {
   if (commandMap_.find(command.command) == commandMap_.end()) {
-    ServerHandler::queueMessage(server, client,
-                                ":myserver 421 " + client.getNickname() + " " +
-                                    command.command + " :Unknown command\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "421", command.command + " :Unknown command");
+    CommandUtils::reply(server, client, msg);
     return;
   }
 

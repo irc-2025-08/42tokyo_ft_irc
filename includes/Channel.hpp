@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-// TODO
 class Channel {
 public:
   Channel(const std::string &name);
@@ -21,4 +20,6 @@ private:
   int limit_of_members;
   std::string channel_password;
   std::string channel_topic;
+};
+
 };

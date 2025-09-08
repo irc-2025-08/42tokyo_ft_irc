@@ -1,53 +1,55 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerHandler.hpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:50 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 21:55:11 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 
-#include "Server.hpp"
 #include "Client.hpp"
+#include "Server.hpp"
 
 class ServerHandler {
 public:
   /**
    * @brief queue a message, it will be sent to the client in the event loop
-   * @param server the server
-   * @param client the client
    * @param message the message to send
    * @return 0 on success, -1 on error
    * @note if failed, should close the client connection
    */
-  static int queueMessage(Server &server, Client &client, const std::string &message);
+  static int queueMessage(Server &server, Client &client,
+                          const std::string &message);
 
   /**
-  * @brief clear the send buffer and reset epoll event
-  * @param server the server
-  * @param client the client
-  * @return 0 on success, -1 on error
-  * @note if failed, should close the client connection
-  */
+   * @brief clear the send buffer and reset epoll event
+   * @return 0 on success, -1 on error
+   * @note if failed, should close the client connection
+   */
   static int onSendComplete(Server &server, Client &client);
 
   /**
    * @brief handle the accept event
-   * @param server the server
    */
   static void handleAccept(Server &server);
 
   /**
    * @brief handle the recv event
-   * @param server the server
-   * @param client the client
    */
   static void handleRecv(Server &server, Client &client);
 
   /**
    * @brief handle the send event
-   * @param server the server
-   * @param client the client
    */
   static void handleSend(Server &server, Client &client);
 
   /**
    * @brief handle the close event
-   * @param server the server
-   * @param client the client
    */
   static void closeClientConnection(Server &server, Client &client);
 };

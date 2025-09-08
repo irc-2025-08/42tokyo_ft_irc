@@ -1,10 +1,22 @@
-#include "../includes/Server.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/02 00:18:26 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 21:55:01 by yxu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/CommandHandler.hpp"
+#include "../includes/Server.hpp"
+#include <cerrno>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <string>
-#include <cstring>
-#include <cerrno>
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -19,8 +31,6 @@ int main(int argc, char **argv) {
     std::cerr << "Error: port must be between 1024 and 65535" << std::endl;
     return 1;
   }
-
-  CommandHandler::initCommandMap();
 
   // run the server
   try {

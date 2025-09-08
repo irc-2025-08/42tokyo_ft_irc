@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ping.cpp                                           :+:      :+:    :+:   */
+/*   cap.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/02 00:18:19 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:37:02 by yxu              ###   ########.fr       */
+/*   Created: 2025/09/05 22:42:11 by yxu               #+#    #+#             */
+/*   Updated: 2025/09/06 21:36:30 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Command.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::ping(Server &server, Client &client, const IrcMessage &command) {
+bool Command::cap(Server &server, Client &client, const IrcMessage &command) {
   (void)command;
   IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "PONG",
-      server.getServerName() + " :" + client.getNickname());
+      server.getServerName(), "CAP", client.getNickname() + " LS :");
   CommandUtils::reply(server, client, msg);
   return true;
 }
