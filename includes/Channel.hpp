@@ -16,6 +16,7 @@ public:
   
   // Operator management methods
   void addOperator(const std::string& nickname);
+  bool isOperator(const std::string& nickname) const;
 
 private:
   std::string channel_name;

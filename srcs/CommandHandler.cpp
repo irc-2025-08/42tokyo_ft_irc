@@ -27,6 +27,7 @@ void CommandHandler::initCommandMap() {
   commandMap_["USER"] = Command::user;
   commandMap_["JOIN"] = Command::joinCmd;
   commandMap_["PART"] = Command::partCmd;
+  commandMap_["KICK"] = Command::kickCmd;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {

@@ -67,3 +67,13 @@ void Channel::addOperator(const std::string& nickname) {
   }
   channel_operator_list.push_back(nickname);
 }
+
+bool Channel::isOperator(const std::string& nickname) const {
+  for (std::vector<std::string>::const_iterator it = channel_operator_list.begin();
+       it != channel_operator_list.end(); ++it) {
+    if (*it == nickname) {
+      return true;
+    }
+  }
+  return false;
+}
