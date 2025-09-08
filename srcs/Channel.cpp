@@ -32,6 +32,16 @@ void Channel::addMember(const std::string& nickname) {
   }
 }
 
+void Channel::removeMember(const std::string& nickname) {
+  for (std::vector<std::string>::iterator it = channel_member_list.begin();
+       it != channel_member_list.end(); ++it) {
+    if (*it == nickname) {
+      channel_member_list.erase(it);
+      return;
+    }
+  }
+}
+
 bool Channel::hasMember(const std::string& nickname) const {
   for (std::vector<std::string>::const_iterator it = channel_member_list.begin();
        it != channel_member_list.end(); ++it) {

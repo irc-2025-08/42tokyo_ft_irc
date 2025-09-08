@@ -10,6 +10,7 @@ public:
   
   // Member management methods
   void addMember(const std::string& nickname);
+  void removeMember(const std::string& nickname);
   bool hasMember(const std::string& nickname) const;
   const std::string& getName() const;
   
