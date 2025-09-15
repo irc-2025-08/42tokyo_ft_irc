@@ -10,14 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../includes/Command.hpp"
 #include "../../includes/CommandHandler.hpp"
 #include "../../includes/ServerHandler.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
 
-bool CommandHandler::joinCmd(Server &server, Client &client,
-                            const IrcCommand &command) {
+bool Command::joinCmd(Server &server, Client &client,
+                     const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {
     ServerHandler::queueMessage(server, client,
@@ -38,7 +39,7 @@ bool CommandHandler::joinCmd(Server &server, Client &client,
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);
   
-  if (channel == nullptr) {
+  if (channel == NULL) {
     // チャンネルが存在しない場合、新しく作成
     server.addChannel(channelName);
     channel = server.findChannel(channelName);

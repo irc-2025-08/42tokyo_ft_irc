@@ -41,12 +41,12 @@ private:
       commandMap_;
 
   static void processCommand(Server &server, Client &client,
-                             const IrcCommand &command);
+                             const IrcMessage &command);
 
   static bool pingCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                                 const IrcMessage &command);
   static bool joinCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                                 const IrcMessage &command);
   static bool partCmd(Server &server, Client &client,
-                                 const IrcCommand &command);
+                                 const IrcMessage &command);
 };
