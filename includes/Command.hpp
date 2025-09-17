@@ -25,4 +25,7 @@ public:
   static bool joinCmd(Server &server, Client &client, const IrcMessage &command);
   static bool partCmd(Server &server, Client &client, const IrcMessage &command);
   static bool kickCmd(Server &server, Client &client, const IrcMessage &command);
+  static bool namesCmd(Server &server, Client &client, const IrcMessage &command);
+  static bool inviteCmd(Server &server, Client &client, const IrcMessage &command);
+  static bool modeCmd(Server &server, Client &client, const IrcMessage &command);
 };

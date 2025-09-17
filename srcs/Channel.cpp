@@ -15,10 +15,14 @@
 Channel::Channel(const std::string &name)
     : channel_name(name),
       is_invitation_only(false),
+      is_topic_restricted(true),
+      has_channel_key(false),
       limit_of_members(0),
       channel_password(""),
       channel_topic("") {
   // メンバーリストは空で初期化される（vectorのデフォルトコンストラクタ）
+  // デフォルトでは topic はオペレーターのみ変更可能
+  // デフォルトではチャンネルキーは設定されていない
 }
 
 Channel::~Channel() {
@@ -68,6 +72,16 @@ void Channel::addOperator(const std::string& nickname) {
   channel_operator_list.push_back(nickname);
 }
 
+void Channel::removeOperator(const std::string& nickname) {
+  for (std::vector<std::string>::iterator it = channel_operator_list.begin();
+       it != channel_operator_list.end(); ++it) {
+    if (*it == nickname) {
+      channel_operator_list.erase(it);
+      return;
+    }
+  }
+}
+
 bool Channel::isOperator(const std::string& nickname) const {
   for (std::vector<std::string>::const_iterator it = channel_operator_list.begin();
        it != channel_operator_list.end(); ++it) {
@@ -76,4 +90,58 @@ bool Channel::isOperator(const std::string& nickname) const {
     }
   }
   return false;
+}
+
+// Invitation management methods
+bool Channel::isInvitationOnly() const {
+  return is_invitation_only;
+}
+
+void Channel::setInvitationOnly(bool inviteOnly) {
+  is_invitation_only = inviteOnly;
+}
+
+std::vector<std::string> Channel::getMembers() const {
+  return channel_member_list;
+}
+
+// Topic management methods
+bool Channel::isTopicRestricted() const {
+  return is_topic_restricted;
+}
+
+void Channel::setTopicRestricted(bool restricted) {
+  is_topic_restricted = restricted;
+}
+
+// User limit management methods
+int Channel::getUserLimit() const {
+  return limit_of_members;
+}
+
+void Channel::setUserLimit(int limit) {
+  limit_of_members = limit;
+}
+
+bool Channel::hasUserLimit() const {
+  return limit_of_members > 0;
+}
+
+// Channel key (password) management methods
+bool Channel::hasChannelKey() const {
+  return has_channel_key;
+}
+
+void Channel::setChannelKey(const std::string& key) {
+  channel_password = key;
+  has_channel_key = true;
+}
+
+void Channel::removeChannelKey() {
+  channel_password = "";
+  has_channel_key = false;
+}
+
+const std::string& Channel::getChannelKey() const {
+  return channel_password;
 }

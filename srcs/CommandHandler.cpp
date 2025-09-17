@@ -28,6 +28,9 @@ void CommandHandler::initCommandMap() {
   commandMap_["JOIN"] = Command::joinCmd;
   commandMap_["PART"] = Command::partCmd;
   commandMap_["KICK"] = Command::kickCmd;
+  commandMap_["NAMES"] = Command::namesCmd;
+  commandMap_["INVITE"] = Command::inviteCmd;
+  commandMap_["MODE"] = Command::modeCmd;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
