@@ -16,6 +16,7 @@ Channel::Channel(const std::string &name)
     : channel_name(name),
       is_invitation_only(false),
       is_topic_restricted(true),
+      is_topic_set(false),
       has_channel_key(false),
       limit_of_members(0),
       channel_password(""),
@@ -112,6 +113,19 @@ bool Channel::isTopicRestricted() const {
 
 void Channel::setTopicRestricted(bool restricted) {
   is_topic_restricted = restricted;
+}
+
+bool Channel::isTopicSet() const {
+  return is_topic_set;
+}
+
+const std::string& Channel::getTopic() const {
+  return channel_topic;
+}
+
+void Channel::setTopic(const std::string& topic) {
+  channel_topic = topic;
+  is_topic_set = !topic.empty();
 }
 
 // User limit management methods

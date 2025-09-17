@@ -260,8 +260,9 @@ bool Command::modeCmd(Server &server, Client &client,
   if (!responseMode.empty()) {
     // チャンネルの全メンバーにモード変更を通知
     std::vector<std::string> members = channel->getMembers();
-    for (const std::string& member : members) {
-      Client* memberClient = server.findClientByNickname(member);
+    for (std::vector<std::string>::const_iterator it = members.begin();
+         it != members.end(); ++it) {
+      Client* memberClient = server.findClientByNickname(*it);
       if (memberClient) {
         ServerHandler::queueMessage(server, *memberClient,
           ":" + clientNickname + " MODE " + channelName + " " + responseMode + "\r\n");

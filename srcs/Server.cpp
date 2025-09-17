@@ -136,3 +136,14 @@ Channel* Server::findChannel(const std::string& channelName) {
 void Server::addChannel(const std::string& channelName) {
   channels_.push_back(Channel(channelName));
 }
+
+// Client management methods
+Client* Server::findClientByNickname(const std::string& nickname) {
+  for (std::map<int, Client>::iterator it = clients_.begin();
+       it != clients_.end(); ++it) {
+    if (it->second.getNickname() == nickname) {
+      return &(it->second);
+    }
+  }
+  return NULL;
+}

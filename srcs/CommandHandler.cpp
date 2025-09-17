@@ -31,6 +31,7 @@ void CommandHandler::initCommandMap() {
   commandMap_["NAMES"] = Command::namesCmd;
   commandMap_["INVITE"] = Command::inviteCmd;
   commandMap_["MODE"] = Command::modeCmd;
+  commandMap_["TOPIC"] = Command::topicCmd;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {

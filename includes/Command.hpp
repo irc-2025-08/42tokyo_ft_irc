@@ -28,4 +28,5 @@ public:
   static bool namesCmd(Server &server, Client &client, const IrcMessage &command);
   static bool inviteCmd(Server &server, Client &client, const IrcMessage &command);
   static bool modeCmd(Server &server, Client &client, const IrcMessage &command);
+  static bool topicCmd(Server &server, Client &client, const IrcMessage &command);
 };

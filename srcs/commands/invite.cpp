@@ -80,9 +80,10 @@ bool Command::inviteCmd(Server &server, Client &client,
   
   // チャンネルの他のメンバーにJOIN通知を送信
   std::vector<std::string> members = channel->getMembers();
-  for (const std::string& member : members) {
-    if (member != targetNickname) {
-      Client* memberClient = server.findClientByNickname(member);
+  for (std::vector<std::string>::const_iterator it = members.begin();
+       it != members.end(); ++it) {
+    if (*it != targetNickname) {
+      Client* memberClient = server.findClientByNickname(*it);
       if (memberClient) {
         ServerHandler::queueMessage(server, *memberClient,
           ":" + targetNickname + " JOIN " + channelName + "\r\n");

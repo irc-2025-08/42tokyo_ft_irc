@@ -27,6 +27,9 @@ public:
   // Topic management methods
   bool isTopicRestricted() const;
   void setTopicRestricted(bool restricted);
+  bool isTopicSet() const;
+  const std::string& getTopic() const;
+  void setTopic(const std::string& topic);
   
   // User limit management methods
   int getUserLimit() const;
@@ -45,6 +48,7 @@ private:
   std::vector<std::string> channel_operator_list;
   bool is_invitation_only;
   bool is_topic_restricted;
+  bool is_topic_set;
   bool has_channel_key;
   int limit_of_members;
   std::string channel_password;
