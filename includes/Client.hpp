@@ -28,6 +28,8 @@ public:
   int getFd() const;
   std::string getNickname() const;
   void setNickname(const std::string &nickname);
+  std::string getUsername() const;
+  void setUsername(const std::string &username);
   bool isRegistered() const;
   bool isPasswordProvided() const;
   void setPasswordProvided(bool provided);
@@ -38,6 +40,7 @@ private:
   int fd_;
   sockaddr_in addr_;
   std::string nickname_;
+  std::string username_;
   bool registered_;
   bool passwordProvided_;
   std::string recvBuffer_;
