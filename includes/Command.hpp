@@ -22,4 +22,7 @@ public:
   static bool nick(Server &server, Client &client, const IrcMessage &command);
   static bool cap(Server &server, Client &client, const IrcMessage &command);
   static bool user(Server &server, Client &client, const IrcMessage &command);
+  static bool quit(Server &server, Client &client, const IrcMessage &command);
+  static bool motd(Server &server, Client &client, const IrcMessage &command);
+  static bool privmsg(Server &server, Client &client, const IrcMessage &command);
 };
