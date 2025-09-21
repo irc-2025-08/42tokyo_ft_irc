@@ -25,6 +25,8 @@ void CommandHandler::initCommandMap() {
   commandMap_["NICK"] = Command::nick;
   commandMap_["CAP"] = Command::cap;
   commandMap_["USER"] = Command::user;
+  commandMap_["QUIT"] = Command::quit;
+  commandMap_["MOTD"] = Command::motd;
   commandMap_["PASS"] = passCmd;
 }
 
