@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 22:24:57 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/23 19:55:19 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,17 @@ class Client;
 
 class CommandHandler {
 public:
+  /**
+   * @brief maximum length of an IRC message (including \r\n)
+   * See RFC 2812
+  */
+  static const int MAX_MSG_LENGTH = 512;
+  /**
+   * @brief maximum number of parameters in an IRC message
+   * See RFC 2812
+   */
+  static const int MAX_MSG_PARAMS = 15;
+
   /**
    * @brief initialize commands, should be called before running the server
    */
