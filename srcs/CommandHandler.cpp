@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/23 20:25:11 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/23 20:56:48 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,12 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
     }
     std::cout << "]" << std::endl;
 
-    if (!CommandUtils::isIrcMessageValid(command)) {
-      std::cerr << "[INFO] Received illegal message from client "
+    // Clients SHOULD not use a prefix when sending a message from themselves;
+    // from RFC 2812
+    if (!command.prefix.empty()) {
+      std::cerr << "[INFO] ignored prefix in message from client "
                 << client.getFd() << ": " << cmdLine << std::endl;
+      command.prefix = "";
       continue;
     }
 

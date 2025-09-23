@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 22:59:40 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/23 20:49:34 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,4 @@ IrcMessage CommandUtils::createIrcMessage(const std::string &prefix,
 IrcMessage CommandUtils::createIrcMessage(const std::string &command,
                                           const std::string &paramsStr) {
   return createIrcMessage("", command, paramsStr);
-}
-
-// to be implemented
-bool CommandUtils::isIrcMessageValid(const IrcMessage &message) {
-  (void)message;
-  return true;
 }
