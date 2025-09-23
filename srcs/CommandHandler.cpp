@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/23 20:56:48 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/23 21:03:25 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
 
     } catch (const std::runtime_error &e) {
       std::cerr << "[INFO] ircd: " << e.what() << std::endl;
+      pos = client.recvBuffer_.find("\r\n");
       continue;
     }
 
@@ -58,7 +59,6 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
       std::cerr << "[INFO] ignored prefix in message from client "
                 << client.getFd() << ": " << cmdLine << std::endl;
       command.prefix = "";
-      continue;
     }
 
     processCommand(server, client, command);
@@ -71,7 +71,7 @@ IrcMessage CommandHandler::parseCommandLine(const std::string &cmdLine) {
   if (cmdLine.length() > MAX_MSG_LENGTH - 2) // -2 to exclude \r\n
     throw std::runtime_error("Parser: Message too long");
 
-  if (cmdLine.find("\0") != std::string::npos)
+  if (cmdLine.find('\0') != std::string::npos)
     throw std::runtime_error("Parser: Message contains null character");
 
   IrcMessage ircCommand;
