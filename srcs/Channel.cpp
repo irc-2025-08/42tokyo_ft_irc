@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
+#include <iostream>
 
 Channel::Channel(const std::string &name)
     : channel_name(name),
@@ -24,6 +25,8 @@ Channel::Channel(const std::string &name)
   // メンバーリストは空で初期化される（vectorのデフォルトコンストラクタ）
   // デフォルトでは topic はオペレーターのみ変更可能
   // デフォルトではチャンネルキーは設定されていない
+  
+  std::cout << "[INFO] Channel created: " << channel_name << std::endl;
 }
 
 Channel::~Channel() {

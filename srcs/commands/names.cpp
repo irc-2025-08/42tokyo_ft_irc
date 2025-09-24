@@ -16,13 +16,16 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::namesCmd(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + client.getNickname() + " NAMES :Not enough parameters\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      client.getNickname() + " NAMES :Not enough parameters");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -34,8 +37,10 @@ bool Command::namesCmd(Server &server, Client &client,
   
   if (channel == NULL) {
     // チャンネルが存在しない場合
-    ServerHandler::queueMessage(server, client,
-      ":myserver 403 " + clientNickname + " " + channelName + " :No such channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "403", 
+      clientNickname + " " + channelName + " :No such channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -52,12 +57,16 @@ bool Command::namesCmd(Server &server, Client &client,
   }
   
   // 353レスポンス（チャンネルメンバーリスト）
-  ServerHandler::queueMessage(server, client,
-    ":myserver 353 " + clientNickname + " = " + channelName + " :" + membersList + "\r\n");
+  IrcMessage msg1 = CommandUtils::createIrcMessage(
+    server.getServerName(), "353", 
+    clientNickname + " = " + channelName + " :" + membersList);
+  CommandUtils::reply(server, client, msg1);
   
   // 366レスポンス（メンバーリスト終了）
-  ServerHandler::queueMessage(server, client,
-    ":myserver 366 " + clientNickname + " " + channelName + " :End of NAMES list\r\n");
+  IrcMessage msg2 = CommandUtils::createIrcMessage(
+    server.getServerName(), "366", 
+    clientNickname + " " + channelName + " :End of NAMES list");
+  CommandUtils::reply(server, client, msg2);
   
   return true;
 }

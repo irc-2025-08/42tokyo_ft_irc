@@ -32,6 +32,7 @@ void CommandHandler::initCommandMap() {
   commandMap_["INVITE"] = Command::inviteCmd;
   commandMap_["MODE"] = Command::modeCmd;
   commandMap_["TOPIC"] = Command::topicCmd;
+  commandMap_["DEBUG"] = Command::debugCmd;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
@@ -42,15 +43,17 @@ void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
 
     IrcMessage command = parseCommandLine(cmdLine);
 
-    std::cout << "[DEBUG] Received message from client " << client.getFd()
-              << ": \"" << cmdLine << "\"\n"
-              << "        prefix: \"" << command.prefix << "\", command: \""
-              << command.command << "\", params: [";
-    for (size_t i = 0; i < command.params.size(); i++) {
-      std::cout << "\"" << command.params[i] << "\""
-                << (i == command.params.size() - 1 ? "" : ", ");
+    if (command.command != "PING") {
+      std::cout << "[DEBUG] Received message from client " << client.getFd()
+                << ": \"" << cmdLine << "\"\n"
+                << "        prefix: \"" << command.prefix << "\", command: \""
+                << command.command << "\", params: [";
+      for (size_t i = 0; i < command.params.size(); i++) {
+        std::cout << "\"" << command.params[i] << "\""
+                  << (i == command.params.size() - 1 ? "" : ", ");
+      }
+      std::cout << "]" << std::endl;
     }
-    std::cout << "]" << std::endl;
 
     if (!CommandUtils::isIrcMessageValid(command)) {
       std::cerr << "[WARN] Received illegal message from client "

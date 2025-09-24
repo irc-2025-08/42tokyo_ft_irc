@@ -16,13 +16,16 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::joinCmd(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + client.getNickname() + " JOIN :Not enough parameters\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      client.getNickname() + " JOIN :Not enough parameters");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -31,8 +34,10 @@ bool Command::joinCmd(Server &server, Client &client,
   
   // チャンネル名の検証
   if (channelName.empty()) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 476 " + clientNickname + " " + channelName + " :Bad Channel Mask\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "476", 
+      clientNickname + " " + channelName + " :Bad Channel Mask");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -55,8 +60,9 @@ bool Command::joinCmd(Server &server, Client &client,
   channel->addMember(clientNickname);
   
   // JOIN成功の応答を送信
-  ServerHandler::queueMessage(server, client,
-    ":" + clientNickname + " JOIN " + channelName + "\r\n");
+  IrcMessage msg = CommandUtils::createIrcMessage(
+    clientNickname, "JOIN", channelName);
+  CommandUtils::reply(server, client, msg);
   
   return true;
 }

@@ -43,8 +43,10 @@ int CommandUtils::reply(Server &server, Client &client,
     reply += message.params.back();
   }
 
-  std::cout << "[DEBUG] Sent message to client " << client.getFd() << ": "
-            << "\"" << reply << "\"\n";
+  if (reply.find("PONG") == std::string::npos) {
+    std::cout << "[DEBUG] Sent message to client " << client.getFd() << ": "
+              << "\"" << reply << "\"\n";
+  }
 
   reply += "\r\n";
 

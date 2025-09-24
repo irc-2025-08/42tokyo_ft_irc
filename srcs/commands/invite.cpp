@@ -16,13 +16,16 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::inviteCmd(Server &server, Client &client,
                        const IrcMessage &command) {
   // パラメータチェック (nickname channel)
   if (command.params.size() < 2) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + client.getNickname() + " INVITE :Not enough parameters\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      client.getNickname() + " INVITE :Not enough parameters");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -33,37 +36,47 @@ bool Command::inviteCmd(Server &server, Client &client,
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);
   if (channel == NULL) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 403 " + clientNickname + " " + channelName + " :No such channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "403", 
+      clientNickname + " " + channelName + " :No such channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // クライアントがチャンネルのメンバーかチェック
   if (!channel->hasMember(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 442 " + clientNickname + " " + channelName + " :You're not on that channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "442", 
+      clientNickname + " " + channelName + " :You're not on that channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // チャンネルがinvite onlyかつクライアントがoperatorかチェック
   if (channel->isInvitationOnly() && !channel->isOperator(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 482 " + clientNickname + " " + channelName + " :You're not channel operator\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "482", 
+      clientNickname + " " + channelName + " :You're not channel operator");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // 招待対象のクライアントが存在するかチェック
   Client* targetClient = server.findClientByNickname(targetNickname);
   if (targetClient == NULL) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 401 " + clientNickname + " " + targetNickname + " :No such nick/channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "401", 
+      clientNickname + " " + targetNickname + " :No such nick/channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // 招待対象が既にチャンネルのメンバーかチェック
   if (channel->hasMember(targetNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 443 " + clientNickname + " " + targetNickname + " " + channelName + " :is already on channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "443", 
+      clientNickname + " " + targetNickname + " " + channelName + " :is already on channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -71,12 +84,16 @@ bool Command::inviteCmd(Server &server, Client &client,
   channel->addMember(targetNickname);
   
   // 招待者にINVITE成功の応答を送信
-  ServerHandler::queueMessage(server, client,
-    ":myserver 341 " + clientNickname + " " + targetNickname + " " + channelName + "\r\n");
+  IrcMessage msg1 = CommandUtils::createIrcMessage(
+    server.getServerName(), "341", 
+    clientNickname + " " + targetNickname + " " + channelName);
+  CommandUtils::reply(server, client, msg1);
   
   // 招待された人にINVITE通知を送信
-  ServerHandler::queueMessage(server, *targetClient,
-    ":" + clientNickname + " INVITE " + targetNickname + " " + channelName + "\r\n");
+  IrcMessage msg2 = CommandUtils::createIrcMessage(
+    clientNickname, "INVITE", 
+    targetNickname + " " + channelName);
+  CommandUtils::reply(server, *targetClient, msg2);
   
   // チャンネルの他のメンバーにJOIN通知を送信
   std::vector<std::string> members = channel->getMembers();
@@ -85,8 +102,9 @@ bool Command::inviteCmd(Server &server, Client &client,
     if (*it != targetNickname) {
       Client* memberClient = server.findClientByNickname(*it);
       if (memberClient) {
-        ServerHandler::queueMessage(server, *memberClient,
-          ":" + targetNickname + " JOIN " + channelName + "\r\n");
+        IrcMessage msg3 = CommandUtils::createIrcMessage(
+          targetNickname, "JOIN", channelName);
+        CommandUtils::reply(server, *memberClient, msg3);
       }
     }
   }

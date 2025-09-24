@@ -18,13 +18,16 @@
 #include "../../includes/Channel.hpp"
 #include <cctype>
 #include <cstdlib>
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::modeCmd(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック (channel mode_string)
   if (command.params.size() < 2) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + client.getNickname() + " MODE :Not enough parameters\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      client.getNickname() + " MODE :Not enough parameters");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -35,15 +38,19 @@ bool Command::modeCmd(Server &server, Client &client,
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);
   if (channel == NULL) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 403 " + clientNickname + " " + channelName + " :No such channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "403", 
+      clientNickname + " " + channelName + " :No such channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // クライアントがチャンネルのメンバーかチェック
   if (!channel->hasMember(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 442 " + clientNickname + " " + channelName + " :You're not on that channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "442", 
+      clientNickname + " " + channelName + " :You're not on that channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   

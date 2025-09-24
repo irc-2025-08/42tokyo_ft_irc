@@ -16,13 +16,16 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::topicCmd(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック (最低でもchannelが必要)
   if (command.params.size() < 1) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + client.getNickname() + " TOPIC :Not enough parameters\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      client.getNickname() + " TOPIC :Not enough parameters");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -32,15 +35,19 @@ bool Command::topicCmd(Server &server, Client &client,
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);
   if (channel == NULL) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 403 " + clientNickname + " " + channelName + " :No such channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "403", 
+      clientNickname + " " + channelName + " :No such channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   // クライアントがチャンネルのメンバーかチェック
   if (!channel->hasMember(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 442 " + clientNickname + " " + channelName + " :You're not on that channel\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "442", 
+      clientNickname + " " + channelName + " :You're not on that channel");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -48,12 +55,16 @@ bool Command::topicCmd(Server &server, Client &client,
   if (command.params.size() == 1) {
     if (channel->isTopicSet()) {
       // 332 RPL_TOPIC: トピックを表示
-      ServerHandler::queueMessage(server, client,
-        ":myserver 332 " + clientNickname + " " + channelName + " :" + channel->getTopic() + "\r\n");
+      IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "332", 
+        clientNickname + " " + channelName + " :" + channel->getTopic());
+      CommandUtils::reply(server, client, msg);
     } else {
       // 331 RPL_NOTOPIC: トピックが設定されていない
-      ServerHandler::queueMessage(server, client,
-        ":myserver 331 " + clientNickname + " " + channelName + " :No topic is set\r\n");
+      IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "331", 
+        clientNickname + " " + channelName + " :No topic is set");
+      CommandUtils::reply(server, client, msg);
     }
     return true;
   }
@@ -61,8 +72,10 @@ bool Command::topicCmd(Server &server, Client &client,
   // パラメータが2つ以上の場合: トピックを設定
   // topic制限がある場合、オペレーターかどうかをチェック
   if (channel->isTopicRestricted() && !channel->isOperator(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 482 " + clientNickname + " " + channelName + " :You're not channel operator\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "482", 
+      clientNickname + " " + channelName + " :You're not channel operator");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -76,8 +89,10 @@ bool Command::topicCmd(Server &server, Client &client,
        it != members.end(); ++it) {
     Client* memberClient = server.findClientByNickname(*it);
     if (memberClient) {
-      ServerHandler::queueMessage(server, *memberClient,
-        ":" + clientNickname + " TOPIC " + channelName + " :" + newTopic + "\r\n");
+      IrcMessage msg = CommandUtils::createIrcMessage(
+        clientNickname, "TOPIC", 
+        channelName + " :" + newTopic);
+      CommandUtils::reply(server, *memberClient, msg);
     }
   }
   
