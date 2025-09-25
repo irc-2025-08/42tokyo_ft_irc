@@ -17,6 +17,7 @@
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
 #include "../../includes/CommandUtils.hpp"
+#include <iostream>
 
 bool Command::namesCmd(Server &server, Client &client,
                       const IrcMessage &command) {
@@ -25,12 +26,15 @@ bool Command::namesCmd(Server &server, Client &client,
     IrcMessage msg = CommandUtils::createIrcMessage(
       server.getServerName(), "461", 
       client.getNickname() + " NAMES :Not enough parameters");
-    CommandUtils::reply(server, client, msg);
+    CommandUtils::reply(server, client, msg);\
     return false;
   }
   
   std::string channelName = command.params[0];
   std::string clientNickname = client.getNickname();
+  
+  // デバッグ: channelNameの内容を確認
+  std::cout << "[DEBUG] namesCmd - channelName: \"" << channelName << "\" (length: " << channelName.length() << ")" << std::endl;
   
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);

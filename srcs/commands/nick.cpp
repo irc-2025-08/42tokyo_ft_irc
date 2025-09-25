@@ -20,7 +20,7 @@ bool Command::nick(Server &server, Client &client, const IrcMessage &command) {
         server.getServerName(), "431",
         client.getNickname() + " :Nickname is required");
     CommandUtils::reply(server, client, msg);
-    return true;
+    return true;//ここが発動しない
   }
 
   client.setNickname(command.params[0]);
