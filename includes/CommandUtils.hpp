@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:14 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:50:15 by yxu              ###   ########.fr       */
+/*   Updated: 2025/09/23 20:49:22 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,4 @@ public:
    * @brief send welcome message(001~004) to the client
    */
   static int sendWelcomeMessage(Server &server, Client &client);
-
-  /**
-   * @brief check if the irc message is valid
-   */
-  static bool isIrcMessageValid(const IrcMessage &message);
 };
