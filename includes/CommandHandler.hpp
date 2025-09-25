@@ -45,6 +45,12 @@ private:
 
   static bool pingCmd(Server &server, Client &client,
                                  const IrcMessage &command);
+
+  static bool passCmd(Server &server, Client &client,
+                                 const IrcMessage &command);
+
+  static bool pingCmd(Server &server, Client &client,
+                                 const IrcMessage &command);
   static bool joinCmd(Server &server, Client &client,
                                  const IrcMessage &command);
   static bool partCmd(Server &server, Client &client,

@@ -34,6 +34,7 @@ public:
   void run();
   ServerStatus getStatus() const;
   void setStatus(ServerStatus status);
+  std::string getPassword() const;
   std::string getServerName() const;
   std::map<int, Client> getClientsMap() const;
   

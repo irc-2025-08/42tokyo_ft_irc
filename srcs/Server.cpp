@@ -70,6 +70,8 @@ void Server::setStatus(ServerStatus status) {
 
 Server::ServerStatus Server::getStatus() const { return serverStatus_; }
 
+std::string Server::getPassword() const { return password_; }
+
 std::string Server::getServerName() const { return serverName_; }
 
 std::map<int, Client> Server::getClientsMap() const { return clients_; }

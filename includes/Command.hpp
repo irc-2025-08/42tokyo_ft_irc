@@ -30,4 +30,7 @@ public:
   static bool modeCmd(Server &server, Client &client, const IrcMessage &command);
   static bool topicCmd(Server &server, Client &client, const IrcMessage &command);
   static bool debugCmd(Server &server, Client &client, const IrcMessage &command);
+  static bool quit(Server &server, Client &client, const IrcMessage &command);
+  static bool motd(Server &server, Client &client, const IrcMessage &command);
+  static bool privmsg(Server &server, Client &client, const IrcMessage &command);
 };

@@ -33,6 +33,10 @@ void CommandHandler::initCommandMap() {
   commandMap_["MODE"] = Command::modeCmd;
   commandMap_["TOPIC"] = Command::topicCmd;
   commandMap_["DEBUG"] = Command::debugCmd;
+  commandMap_["QUIT"] = Command::quit;
+  commandMap_["MOTD"] = Command::motd;
+  commandMap_["PRIVMSG"] = Command::privmsg;
+  commandMap_["PASS"] = passCmd;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {
