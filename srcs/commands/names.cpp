@@ -19,7 +19,7 @@
 #include "../../includes/CommandUtils.hpp"
 #include <iostream>
 
-bool Command::namesCmd(Server &server, Client &client,
+bool Command::names(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {

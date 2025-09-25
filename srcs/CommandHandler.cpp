@@ -25,18 +25,18 @@ void CommandHandler::initCommandMap() {
   commandMap_["NICK"] = Command::nick;
   commandMap_["CAP"] = Command::cap;
   commandMap_["USER"] = Command::user;
-  commandMap_["JOIN"] = Command::joinCmd;
-  commandMap_["PART"] = Command::partCmd;
-  commandMap_["KICK"] = Command::kickCmd;
-  commandMap_["NAMES"] = Command::namesCmd;
-  commandMap_["INVITE"] = Command::inviteCmd;
-  commandMap_["MODE"] = Command::modeCmd;
-  commandMap_["TOPIC"] = Command::topicCmd;
-  commandMap_["DEBUG"] = Command::debugCmd;
+  commandMap_["JOIN"] = Command::join;
+  commandMap_["PART"] = Command::part;
+  commandMap_["KICK"] = Command::kick;
+  commandMap_["NAMES"] = Command::names;
+  commandMap_["INVITE"] = Command::invite;
+  commandMap_["MODE"] = Command::mode;
+  commandMap_["TOPIC"] = Command::topic;
+  commandMap_["DEBUG"] = Command::debug;
   commandMap_["QUIT"] = Command::quit;
   commandMap_["MOTD"] = Command::motd;
   commandMap_["PRIVMSG"] = Command::privmsg;
-  commandMap_["PASS"] = passCmd;
+  commandMap_["PASS"] = Command::pass;
 }
 
 void CommandHandler::parseAndProcessCommand(Server &server, Client &client) {

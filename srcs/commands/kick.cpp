@@ -13,7 +13,7 @@
 #include "../../includes/Command.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::kickCmd(Server &server, Client &client,
+bool Command::kick(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック（チャンネル名とターゲットユーザー名が必要）
   if (command.params.size() < 2) {

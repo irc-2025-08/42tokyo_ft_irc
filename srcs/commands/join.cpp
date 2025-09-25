@@ -18,7 +18,7 @@
 #include "../../includes/Channel.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::joinCmd(Server &server, Client &client,
+bool Command::join(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {

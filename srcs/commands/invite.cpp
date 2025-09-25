@@ -18,7 +18,7 @@
 #include "../../includes/Channel.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::inviteCmd(Server &server, Client &client,
+bool Command::invite(Server &server, Client &client,
                        const IrcMessage &command) {
   // パラメータチェック (nickname channel)
   if (command.params.size() < 2) {

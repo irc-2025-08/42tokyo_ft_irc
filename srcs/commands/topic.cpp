@@ -18,7 +18,7 @@
 #include "../../includes/Channel.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::topicCmd(Server &server, Client &client,
+bool Command::topic(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック (最低でもchannelが必要)
   if (command.params.size() < 1) {

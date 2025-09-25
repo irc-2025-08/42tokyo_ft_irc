@@ -19,7 +19,7 @@
 #include <sstream>
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::debugCmd(Server &server, Client &client,
+bool Command::debug(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック (channelが必要)
   if (command.params.size() < 1) {

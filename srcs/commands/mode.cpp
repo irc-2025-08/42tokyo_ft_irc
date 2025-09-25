@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::modeCmd(Server &server, Client &client,
+bool Command::mode(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック (channel mode_string)
   if (command.params.size() < 2) {

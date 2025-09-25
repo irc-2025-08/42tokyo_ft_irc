@@ -13,7 +13,7 @@
 #include "../../includes/Command.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-bool Command::partCmd(Server &server, Client &client,
+bool Command::part(Server &server, Client &client,
                      const IrcMessage &command) {
   // パラメータチェック
   if (command.params.empty()) {

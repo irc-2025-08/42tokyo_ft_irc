@@ -43,16 +43,12 @@ private:
   static void processCommand(Server &server, Client &client,
                              const IrcMessage &command);
 
-  static bool pingCmd(Server &server, Client &client,
+  static bool ping(Server &server, Client &client,
                                  const IrcMessage &command);
-
-  static bool passCmd(Server &server, Client &client,
+  static bool join(Server &server, Client &client,
                                  const IrcMessage &command);
-
-  static bool pingCmd(Server &server, Client &client,
+  static bool part(Server &server, Client &client,
                                  const IrcMessage &command);
-  static bool joinCmd(Server &server, Client &client,
-                                 const IrcMessage &command);
-  static bool partCmd(Server &server, Client &client,
+  static bool pass(Server &server, Client &client,
                                  const IrcMessage &command);
 };
