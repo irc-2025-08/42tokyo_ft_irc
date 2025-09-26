@@ -17,8 +17,8 @@ bool Command::notice(Server &server, Client &client, const IrcMessage &command) 
   } else {
     std::map<int, Client> clientsMap = server.getClientsMap();
     
-    for (const auto &pair : clientsMap) {
-      const Client &targetClient = pair.second;
+    for (std::map<int, Client>::const_iterator it = clientsMap.begin(); it != clientsMap.end(); ++it) {
+      const Client &targetClient = it->second;
       if (targetClient.getNickname() == target) {
         IrcMessage noticeMessage = CommandUtils::createIrcMessage(
             ":" + client.getNickname() + "!" + client.getUsername() + "@" + server.getServerName(),
