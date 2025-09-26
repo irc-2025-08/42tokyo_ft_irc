@@ -30,8 +30,15 @@ public:
   void setNickname(const std::string &nickname);
   std::string getUsername() const;
   void setUsername(const std::string &username);
+  std::string getRealname() const;
+  void setRealname(const std::string &realname);
   bool isRegistered() const;
+  void setRegistered(bool registered);
   bool isPasswordProvided() const;
+  bool isOperator() const;
+  void setOperator(bool operator_status);
+  bool isConnected() const;
+  void setConnected(bool connected);
   void setPasswordProvided(bool provided);
   Client(const Client &other);
   Client &operator=(const Client &other);
@@ -41,8 +48,11 @@ private:
   sockaddr_in addr_;
   std::string nickname_;
   std::string username_;
+  std::string realname_;
   bool registered_;
   bool passwordProvided_;
+  bool connected_;
+  bool operator_;
   std::string recvBuffer_;
   std::string sendBuffer_;
 };

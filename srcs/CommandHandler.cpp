@@ -28,6 +28,8 @@ void CommandHandler::initCommandMap() {
   commandMap_["QUIT"] = Command::quit;
   commandMap_["MOTD"] = Command::motd;
   commandMap_["PRIVMSG"] = Command::privmsg;
+  commandMap_["NOTICE"] = Command::notice;
+  commandMap_["OPER"] = Command::oper;
   commandMap_["PASS"] = passCmd;
 }
 
