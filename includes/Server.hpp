@@ -41,6 +41,7 @@ public:
   // Channel management methods
   Channel* findChannel(const std::string& channelName);
   void addChannel(const std::string& channelName);
+  void removeChannel(const std::string& channelName);
   
   // Client management methods
   Client* findClientByNickname(const std::string& nickname);

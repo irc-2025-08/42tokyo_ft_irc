@@ -12,12 +12,16 @@ public:
   void addMember(const std::string& nickname);
   void removeMember(const std::string& nickname);
   bool hasMember(const std::string& nickname) const;
+  bool isEmpty() const;
+  size_t getMemberCount() const;
   const std::string& getName() const;
   
   // Operator management methods
   void addOperator(const std::string& nickname);
   void removeOperator(const std::string& nickname);
   bool isOperator(const std::string& nickname) const;
+  size_t getOperatorCount() const;
+  std::vector<std::string> getOperators() const;
   
   // Invitation management methods
   bool isInvitationOnly() const;

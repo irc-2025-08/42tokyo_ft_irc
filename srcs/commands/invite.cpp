@@ -52,8 +52,8 @@ bool Command::invite(Server &server, Client &client,
     return false;
   }
   
-  // チャンネルがinvite onlyかつクライアントがoperatorかチェック
-  if (channel->isInvitationOnly() && !channel->isOperator(clientNickname)) {
+  // クライアントがチャンネルオペレーターかチェック
+  if (!channel->isOperator(clientNickname)) {
     IrcMessage msg = CommandUtils::createIrcMessage(
       server.getServerName(), "482", 
       clientNickname + " " + channelName + " :You're not channel operator");

@@ -60,6 +60,14 @@ bool Channel::hasMember(const std::string& nickname) const {
   return false;
 }
 
+bool Channel::isEmpty() const {
+  return channel_member_list.empty();
+}
+
+size_t Channel::getMemberCount() const {
+  return channel_member_list.size();
+}
+
 const std::string& Channel::getName() const {
   return channel_name;
 }
@@ -94,6 +102,14 @@ bool Channel::isOperator(const std::string& nickname) const {
     }
   }
   return false;
+}
+
+size_t Channel::getOperatorCount() const {
+  return channel_operator_list.size();
+}
+
+std::vector<std::string> Channel::getOperators() const {
+  return channel_operator_list;
 }
 
 // Invitation management methods

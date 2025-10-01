@@ -17,11 +17,13 @@
 #include "../../includes/Client.hpp"
 #include "../../includes/Channel.hpp"
 #include <sstream>
+#include <iostream>
 #include "../../includes/CommandUtils.hpp"
 
 bool Command::debug(Server &server, Client &client,
                       const IrcMessage &command) {
   // パラメータチェック (channelが必要)
+  std::cout << "debug 発動" << std::endl;
   if (command.params.size() < 1) {
     IrcMessage msg = CommandUtils::createIrcMessage(
       server.getServerName(), "461", 
@@ -53,12 +55,16 @@ bool Command::debug(Server &server, Client &client,
   }
   
   // デバッグ情報の開始
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :=== DEBUG INFO for " + channelName + " ===\r\n");
+  IrcMessage msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :=== DEBUG INFO for " + channelName + " ===");
+  CommandUtils::reply(server, client, msg);
   
   // チャンネル名
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :channel_name: " + channel->getName() + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :channel_name: " + channel->getName());
+  CommandUtils::reply(server, client, msg);
   
   // メンバーリスト
   std::vector<std::string> members = channel->getMembers();
@@ -69,8 +75,10 @@ bool Command::debug(Server &server, Client &client,
     if (it != members.begin()) memberStream << ", ";
     memberStream << *it;
   }
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :" + memberStream.str() + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :" + memberStream.str());
+  CommandUtils::reply(server, client, msg);
   
   // オペレーターリスト（getOperators()メソッドがないので、各メンバーをチェック）
   std::ostringstream operatorStream;
@@ -84,57 +92,79 @@ bool Command::debug(Server &server, Client &client,
       firstOp = false;
     }
   }
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :" + operatorStream.str() + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :" + operatorStream.str());
+  CommandUtils::reply(server, client, msg);
   
   // Invitation Only フラグ
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :is_invitation_only: " + 
-    (channel->isInvitationOnly() ? "true" : "false") + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :is_invitation_only: " + 
+    (channel->isInvitationOnly() ? "true" : "false"));
+  CommandUtils::reply(server, client, msg);
   
   // Topic Restricted フラグ
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :is_topic_restricted: " + 
-    (channel->isTopicRestricted() ? "true" : "false") + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :is_topic_restricted: " + 
+    (channel->isTopicRestricted() ? "true" : "false"));
+  CommandUtils::reply(server, client, msg);
   
   // Topic Set フラグとトピック内容
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :is_topic_set: " + 
-    (channel->isTopicSet() ? "true" : "false") + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :is_topic_set: " + 
+    (channel->isTopicSet() ? "true" : "false"));
+  CommandUtils::reply(server, client, msg);
   
   if (channel->isTopicSet()) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 900 " + clientNickname + " :channel_topic: \"" + 
-      channel->getTopic() + "\"\r\n");
+    msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "900", 
+      clientNickname + " :channel_topic: \"" + 
+      channel->getTopic() + "\"");
+    CommandUtils::reply(server, client, msg);
   } else {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 900 " + clientNickname + " :channel_topic: (empty)\r\n");
+    msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "900", 
+      clientNickname + " :channel_topic: (empty)");
+    CommandUtils::reply(server, client, msg);
   }
   
   // Channel Key フラグ
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :has_channel_key: " + 
-    (channel->hasChannelKey() ? "true" : "false") + "\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :has_channel_key: " + 
+    (channel->hasChannelKey() ? "true" : "false"));
+  CommandUtils::reply(server, client, msg);
   
   if (channel->hasChannelKey()) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 900 " + clientNickname + " :channel_password: \"" + 
-      channel->getChannelKey() + "\"\r\n");
+    msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "900", 
+      clientNickname + " :channel_password: \"" + 
+      channel->getChannelKey() + "\"");
+    CommandUtils::reply(server, client, msg);
   } else {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 900 " + clientNickname + " :channel_password: (empty)\r\n");
+    msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "900", 
+      clientNickname + " :channel_password: (empty)");
+    CommandUtils::reply(server, client, msg);
   }
   
   // User Limit
   std::ostringstream limitStream;
   limitStream << channel->getUserLimit();
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :limit_of_members: " + limitStream.str() + 
-    " (hasUserLimit: " + (channel->hasUserLimit() ? "true" : "false") + ")\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :limit_of_members: " + limitStream.str() + 
+    " (hasUserLimit: " + (channel->hasUserLimit() ? "true" : "false") + ")");
+  CommandUtils::reply(server, client, msg);
   
   // デバッグ情報の終了
-  ServerHandler::queueMessage(server, client,
-    ":myserver 900 " + clientNickname + " :=== END DEBUG INFO ===\r\n");
+  msg = CommandUtils::createIrcMessage(
+    server.getServerName(), "900", 
+    clientNickname + " :=== END DEBUG INFO ===");
+  CommandUtils::reply(server, client, msg);
   
   return true;
 }

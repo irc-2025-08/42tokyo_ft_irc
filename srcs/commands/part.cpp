@@ -58,8 +58,29 @@ bool Command::part(Server &server, Client &client,
     return false;
   }
   
+  // 唯一のオペレーターが他にメンバーがいる状況で抜けることを防ぐ
+  if (channel->isOperator(clientNickname) && 
+      channel->getOperatorCount() == 1 && 
+      channel->getMemberCount() > 1) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "484",
+        clientNickname + " " + channelName + " :Cannot leave channel, you are the only operator");
+    CommandUtils::reply(server, client, msg);
+    return false;
+  }
+  
   // チャンネルからクライアントを削除
   channel->removeMember(clientNickname);
+  
+  // オペレーターの場合、オペレーターリストからも削除
+  if (channel->isOperator(clientNickname)) {
+    channel->removeOperator(clientNickname);
+  }
+  
+  // チャンネルが空になった場合、チャンネルを削除
+  if (channel->isEmpty()) {
+    server.removeChannel(channelName);
+  }
   
   // PART成功の応答を送信
   IrcMessage msg = CommandUtils::createIrcMessage(

@@ -43,11 +43,13 @@ bool Command::join(Server &server, Client &client,
   
   // チャンネルが存在するかチェック
   Channel* channel = server.findChannel(channelName);
+  bool isChannelCreator = false;
   
   if (channel == NULL) {
     // チャンネルが存在しない場合、新しく作成
     server.addChannel(channelName);
     channel = server.findChannel(channelName);
+    isChannelCreator = true;
   }
   
   // クライアントが既にチャンネルのメンバーかチェック
@@ -56,8 +58,53 @@ bool Command::join(Server &server, Client &client,
     return true;
   }
   
+  // チャンネル作成者でない場合のみ制限をチェック
+  if (!isChannelCreator) {
+    // invitation onlyチャンネルのチェック
+    if (channel->isInvitationOnly()) {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "473", 
+        clientNickname + " " + channelName + " :Cannot join channel (+i)");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
+    
+    // ユーザー数制限のチェック
+    if (channel->hasUserLimit()) {
+      int currentMembers = static_cast<int>(channel->getMembers().size());
+      if (currentMembers >= channel->getUserLimit()) {
+        IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "471", 
+          clientNickname + " " + channelName + " :Cannot join channel (+l)");
+        CommandUtils::reply(server, client, msg);
+        return false;
+      }
+    }
+    
+    // チャンネルキー（パスワード）のチェック
+    if (channel->hasChannelKey()) {
+      std::string providedKey = "";
+      if (command.params.size() > 1) {
+        providedKey = command.params[1];
+      }
+      
+      if (providedKey != channel->getChannelKey()) {
+        IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "475", 
+          clientNickname + " " + channelName + " :Cannot join channel (+k)");
+        CommandUtils::reply(server, client, msg);
+        return false;
+      }
+    }
+  }
+  
   // チャンネルにクライアントを追加
   channel->addMember(clientNickname);
+  
+  // チャンネル作成者の場合、オペレーター権限を付与
+  if (isChannelCreator) {
+    channel->addOperator(clientNickname);
+  }
   
   // JOIN成功の応答を送信
   IrcMessage msg = CommandUtils::createIrcMessage(

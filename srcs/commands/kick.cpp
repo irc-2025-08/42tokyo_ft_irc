@@ -88,6 +88,16 @@ bool Command::kick(Server &server, Client &client,
   // チャンネルからターゲットユーザーを削除
   channel->removeMember(targetNickname);
   
+  // オペレーターの場合、オペレーターリストからも削除
+  if (channel->isOperator(targetNickname)) {
+    channel->removeOperator(targetNickname);
+  }
+  
+  // チャンネルが空になった場合、チャンネルを削除
+  if (channel->isEmpty()) {
+    server.removeChannel(channelName);
+  }
+  
   // KICK成功の応答を送信
   IrcMessage msg = CommandUtils::createIrcMessage(
       clientNickname, "KICK", channelName + " " + targetNickname);

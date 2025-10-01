@@ -139,6 +139,17 @@ void Server::addChannel(const std::string& channelName) {
   channels_.push_back(Channel(channelName));
 }
 
+void Server::removeChannel(const std::string& channelName) {
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->getName() == channelName) {
+      std::cout << "[INFO] Channel deleted: " << channelName << std::endl;
+      channels_.erase(it);
+      return;
+    }
+  }
+}
+
 // Client management methods
 Client* Server::findClientByNickname(const std::string& nickname) {
   for (std::map<int, Client>::iterator it = clients_.begin();

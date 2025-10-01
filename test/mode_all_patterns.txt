@@ -1,0 +1,420 @@
+# MODEコマンド 全パターン一覧
+
+## 基本セットアップ
+NICK testuser
+USER testuser 0 * :Test User
+JOIN #test
+
+## 1. +i/-i (Invitation Only) パターン
+
+### +i: 招待制設定
+MODE #test +i
+
+### -i: 招待制解除
+MODE #test -i
+
+## 2. +t/-t (Topic Restriction) パターン
+
+### +t: トピック制限設定
+MODE #test +t
+
+### -t: トピック制限解除
+MODE #test -t
+
+## 3. +l/-l (User Limit) パターン
+
+### +l: ユーザー制限設定（様々な値）
+MODE #test +l 1
+MODE #test +l 5
+MODE #test +l 10
+MODE #test +l 20
+MODE #test +l 50
+MODE #test +l 100
+MODE #test +l 999
+
+### -l: ユーザー制限解除
+MODE #test -l
+
+## 4. +k/-k (Channel Key) パターン
+
+### +k: チャンネルキー設定（様々なパスワード）
+MODE #test +k password
+MODE #test +k secret123
+MODE #test +k mykey
+MODE #test +k test
+MODE #test +k 12345
+MODE #test +k abcdefghijklmnopqrstuvwxyz
+MODE #test +k "password with spaces"
+MODE #test +k password_with_underscores
+MODE #test +k password-with-hyphens
+MODE #test +k PASSWORD123!@#
+
+### -k: チャンネルキー削除
+MODE #test -k
+
+## 5. +o/-o (Operator Privilege) パターン
+
+### 前提: 別ユーザーの参加
+# 別のクライアントで実行:
+NICK testuser2
+USER testuser2 0 * :Test User 2
+JOIN #test
+
+NICK testuser3
+USER testuser3 0 * :Test User 3
+JOIN #test
+
+### +o: オペレーター権限付与
+MODE #test +o testuser2
+MODE #test +o testuser3
+
+### -o: オペレーター権限剥奪
+MODE #test -o testuser2
+MODE #test -o testuser3
+
+## 6. 組み合わせパターン（順次実行）
+
+### 複数モードの順次設定
+MODE #test +i
+MODE #test +t
+MODE #test +l 10
+MODE #test +k secret
+MODE #test +o testuser2
+
+### 複数モードの順次解除
+MODE #test -o testuser2
+MODE #test -k
+MODE #test -l
+MODE #test -t
+MODE #test -i
+
+## 7. エラーケース全パターン
+
+### パラメータ不足エラー
+MODE
+MODE #test
+
+### 存在しないチャンネルエラー
+MODE #nonexistent +i
+MODE #notfound +t
+MODE #missing +l 10
+MODE #fake +k password
+MODE #ghost +o testuser
+
+### チャンネルメンバーでないエラー
+# チャンネルから退出後:
+PART #test
+MODE #test +i
+MODE #test +t
+MODE #test +l 10
+MODE #test +k password
+MODE #test +o testuser2
+
+### オペレーター権限なしエラー
+# 非オペレーターユーザー（testuser2）で実行:
+MODE #test +i
+MODE #test +t
+MODE #test +l 10
+MODE #test +k password
+MODE #test +o testuser3
+
+### 複数モード指定エラー
+MODE #test +it
+MODE #test +il
+MODE #test +ik
+MODE #test +io
+MODE #test +tl
+MODE #test +tk
+MODE #test +to
+MODE #test +lk
+MODE #test +lo
+MODE #test +ko
+MODE #test +itl
+MODE #test +itk
+MODE #test +ito
+MODE #test +ilk
+MODE #test +ilo
+MODE #test +iko
+MODE #test +tlk
+MODE #test +tlo
+MODE #test +tko
+MODE #test +lko
+MODE #test +itlk
+MODE #test +itlo
+MODE #test +itko
+MODE #test +ilko
+MODE #test +tlko
+MODE #test +itlko
+
+### 無効なモード文字エラー
+MODE #test +a
+MODE #test +b
+MODE #test +c
+MODE #test +d
+MODE #test +e
+MODE #test +f
+MODE #test +g
+MODE #test +h
+MODE #test +j
+MODE #test +m
+MODE #test +n
+MODE #test +p
+MODE #test +q
+MODE #test +r
+MODE #test +s
+MODE #test +u
+MODE #test +v
+MODE #test +w
+MODE #test +x
+MODE #test +y
+MODE #test +z
+MODE #test +A
+MODE #test +B
+MODE #test +C
+MODE #test +D
+MODE #test +E
+MODE #test +F
+MODE #test +G
+MODE #test +H
+MODE #test +I
+MODE #test +J
+MODE #test +K
+MODE #test +L
+MODE #test +M
+MODE #test +N
+MODE #test +O
+MODE #test +P
+MODE #test +Q
+MODE #test +R
+MODE #test +S
+MODE #test +T
+MODE #test +U
+MODE #test +V
+MODE #test +W
+MODE #test +X
+MODE #test +Y
+MODE #test +Z
+MODE #test +1
+MODE #test +2
+MODE #test +3
+MODE #test +4
+MODE #test +5
+MODE #test +6
+MODE #test +7
+MODE #test +8
+MODE #test +9
+MODE #test +0
+MODE #test +!
+MODE #test +@
+MODE #test +#
+MODE #test +$
+MODE #test +%
+MODE #test +^
+MODE #test +&
+MODE #test +*
+MODE #test +(
+MODE #test +)
+MODE #test +-
+MODE #test +=
+MODE #test +[
+MODE #test +]
+MODE #test +{
+MODE #test +}
+MODE #test +|
+MODE #test +\
+MODE #test +:
+MODE #test +;
+MODE #test +"
+MODE #test +'
+MODE #test +<
+MODE #test +>
+MODE #test +,
+MODE #test +.
+MODE #test +?
+MODE #test +/
+MODE #test +~
+MODE #test +`
+
+### モード指定なしエラー
+MODE #test +
+MODE #test -
+MODE #test +-
+MODE #test -+
+
+### +l パラメータ関連エラー
+MODE #test +l
+MODE #test +l abc
+MODE #test +l xyz
+MODE #test +l 123abc
+MODE #test +l abc123
+MODE #test +l -1
+MODE #test +l 0
+MODE #test +l 1000
+MODE #test +l 9999
+MODE #test +l 1.5
+MODE #test +l 10.0
+MODE #test +l ""
+MODE #test +l " "
+MODE #test +l "  "
+
+### +k パラメータ関連エラー
+MODE #test +k
+MODE #test +k ""
+MODE #test +k " "
+MODE #test +k "                                                   "
+MODE #test +k "verylongpasswordthatexceedsfiftycharacterslimitabcdefghijklmnopqrstuvwxyz"
+
+### +o/-o パラメータ関連エラー
+MODE #test +o
+MODE #test -o
+MODE #test +o ""
+MODE #test -o ""
+MODE #test +o " "
+MODE #test -o " "
+MODE #test +o nonexistentuser
+MODE #test -o nonexistentuser
+MODE #test +o notamember
+MODE #test -o notamember
+
+## 8. 境界値テスト
+
+### +l 境界値
+MODE #test +l 1
+MODE #test +l 999
+
+### +k 境界値（文字数）
+MODE #test +k a
+MODE #test +k ab
+MODE #test +k abc
+MODE #test +k abcdefghijklmnopqrstuvwxyz1234567890abcdefghij
+MODE #test +k abcdefghijklmnopqrstuvwxyz1234567890abcdefghijk
+
+## 9. 特殊文字テスト
+
+### +k 特殊文字
+MODE #test +k password!
+MODE #test +k password@
+MODE #test +k password#
+MODE #test +k password$
+MODE #test +k password%
+MODE #test +k password^
+MODE #test +k password&
+MODE #test +k password*
+MODE #test +k password(
+MODE #test +k password)
+MODE #test +k password-
+MODE #test +k password_
+MODE #test +k password=
+MODE #test +k password+
+MODE #test +k password[
+MODE #test +k password]
+MODE #test +k password{
+MODE #test +k password}
+MODE #test +k password|
+MODE #test +k password\
+MODE #test +k password:
+MODE #test +k password;
+MODE #test +k password"
+MODE #test +k password'
+MODE #test +k password<
+MODE #test +k password>
+MODE #test +k password,
+MODE #test +k password.
+MODE #test +k password?
+MODE #test +k password/
+MODE #test +k password~
+MODE #test +k password`
+
+## 10. 日本語・Unicode テスト
+
+### +k 日本語
+MODE #test +k パスワード
+MODE #test +k 秘密の鍵
+MODE #test +k テスト123
+MODE #test +k 🔑password
+MODE #test +k émojï123
+
+## 11. 大文字小文字テスト
+
+### モード文字の大文字小文字
+MODE #test +I
+MODE #test +T
+MODE #test +L
+MODE #test +K
+MODE #test +O
+MODE #test -I
+MODE #test -T
+MODE #test -L
+MODE #test -K
+MODE #test -O
+
+### チャンネル名の大文字小文字
+MODE #TEST +i
+MODE #Test +i
+MODE #tEsT +i
+
+### ニックネームの大文字小文字（+o/-o）
+MODE #test +o TESTUSER2
+MODE #test +o TestUser2
+MODE #test +o tEsTuSeR2
+
+## 12. 連続実行テスト
+
+### 同じモードの連続設定
+MODE #test +i
+MODE #test +i
+MODE #test +i
+
+### 同じモードの連続解除
+MODE #test -i
+MODE #test -i
+MODE #test -i
+
+### 設定→解除→設定の繰り返し
+MODE #test +i
+MODE #test -i
+MODE #test +i
+MODE #test -i
+MODE #test +i
+
+### 異なる値での連続設定（+l）
+MODE #test +l 10
+MODE #test +l 20
+MODE #test +l 5
+MODE #test +l 100
+
+### 異なるキーでの連続設定（+k）
+MODE #test +k password1
+MODE #test +k password2
+MODE #test +k password3
+MODE #test +k finalpassword
+
+## 13. 状態確認用コマンド
+
+### デバッグコマンドでの状態確認
+DEBUG #test
+
+### NAMESコマンドでの確認
+NAMES #test
+
+## 14. 複数チャンネルでのテスト
+
+### 別チャンネルでの同時テスト
+JOIN #test2
+MODE #test2 +i
+MODE #test +t
+MODE #test2 +l 5
+MODE #test +k secret1
+MODE #test2 +k secret2
+
+## 15. エッジケース
+
+### 空白を含むパラメータ
+MODE #test +k "password with spaces"
+MODE #test +o "user with spaces"
+
+### 非常に長いチャンネル名
+MODE #verylongchannelnamethatmightcauseissuesifnothandledproperly +i
+
+### 非常に長いニックネーム
+MODE #test +o verylongnicknamethatshouldnotexistbutletstryanywaytotest

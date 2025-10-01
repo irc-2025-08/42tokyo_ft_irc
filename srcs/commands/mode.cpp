@@ -18,10 +18,12 @@
 #include "../../includes/Channel.hpp"
 #include <cctype>
 #include <cstdlib>
+#include <iostream>
 #include "../../includes/CommandUtils.hpp"
 
 bool Command::mode(Server &server, Client &client,
                      const IrcMessage &command) {
+  
   // パラメータチェック (channel mode_string)
   if (command.params.size() < 2) {
     IrcMessage msg = CommandUtils::createIrcMessage(
@@ -56,8 +58,10 @@ bool Command::mode(Server &server, Client &client,
   
   // クライアントがチャンネルオペレーターかチェック
   if (!channel->isOperator(clientNickname)) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 482 " + clientNickname + " " + channelName + " :You're not channel operator\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "482", 
+      clientNickname + " " + channelName + " :You're not channel operator");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -71,14 +75,18 @@ bool Command::mode(Server &server, Client &client,
   }
   
   if (modeCount > 1) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + clientNickname + " MODE :Only one mode change allowed per command\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      clientNickname + " MODE :Only one mode change allowed per command");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
   if (modeCount == 0) {
-    ServerHandler::queueMessage(server, client,
-      ":myserver 461 " + clientNickname + " MODE :No valid mode specified\r\n");
+    IrcMessage msg = CommandUtils::createIrcMessage(
+      server.getServerName(), "461", 
+      clientNickname + " MODE :No valid mode specified");
+    CommandUtils::reply(server, client, msg);
     return false;
   }
   
@@ -123,6 +131,7 @@ bool Command::mode(Server &server, Client &client,
         if (!channel->isTopicRestricted()) {
           channel->setTopicRestricted(true);
           responseMode += "+t";
+          std::cout << "channel->isTopicRestricted() " << channel->isTopicRestricted() << std::endl;
         }
       } else {
         // -t: topic 制限を解除する（全メンバーが変更可能）
@@ -139,8 +148,10 @@ bool Command::mode(Server &server, Client &client,
       if (adding) {
         // +l: ユーザー数制限を設定（引数が必要）
         if (paramIndex >= command.params.size()) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 461 " + clientNickname + " MODE :Not enough parameters for +l\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "461", 
+            clientNickname + " MODE :Not enough parameters for +l");
+          CommandUtils::reply(server, client, msg);
           continue;
         }
         
@@ -150,23 +161,29 @@ bool Command::mode(Server &server, Client &client,
         // 数値変換チェック
         for (size_t j = 0; j < limitStr.length(); j++) {
           if (!std::isdigit(limitStr[j])) {
-            ServerHandler::queueMessage(server, client,
-              ":myserver 461 " + clientNickname + " MODE :Invalid limit value\r\n");
+            IrcMessage msg = CommandUtils::createIrcMessage(
+              server.getServerName(), "461", 
+              clientNickname + " MODE :Invalid limit value");
+            CommandUtils::reply(server, client, msg);
             continue;
           }
         }
         
         limit = std::atoi(limitStr.c_str());
         if (limit <= 0 || limit > 999) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 461 " + clientNickname + " MODE :Invalid limit value (1-999)\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "461", 
+            clientNickname + " MODE :Invalid limit value (1-999)");
+          CommandUtils::reply(server, client, msg);
           continue;
         }
         
         // 現在のメンバー数をチェック
         if (limit < static_cast<int>(channel->getMembers().size())) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 467 " + clientNickname + " " + channelName + " :Channel limit is lower than current users\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "467", 
+            clientNickname + " " + channelName + " :Channel limit is lower than current users");
+          CommandUtils::reply(server, client, msg);
           continue;
         }
         
@@ -187,8 +204,10 @@ bool Command::mode(Server &server, Client &client,
       if (adding) {
         // +k: チャンネルキー（パスワード）を設定（引数が必要）
         if (paramIndex >= command.params.size()) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 461 " + clientNickname + " MODE :Not enough parameters for +k\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "461", 
+            clientNickname + " MODE :Not enough parameters for +k");
+          CommandUtils::reply(server, client, msg);
           return false;
         }
         
@@ -196,15 +215,19 @@ bool Command::mode(Server &server, Client &client,
         
         // パスワードが空でないかチェック
         if (channelKey.empty()) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 461 " + clientNickname + " MODE :Channel key cannot be empty\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "461", 
+            clientNickname + " MODE :Channel key cannot be empty");
+          CommandUtils::reply(server, client, msg);
           return false;
         }
         
         // パスワードの長さチェック（1-50文字）
         if (channelKey.length() > 50) {
-          ServerHandler::queueMessage(server, client,
-            ":myserver 461 " + clientNickname + " MODE :Channel key too long (max 50 characters)\r\n");
+          IrcMessage msg = CommandUtils::createIrcMessage(
+            server.getServerName(), "461", 
+            clientNickname + " MODE :Channel key too long (max 50 characters)");
+          CommandUtils::reply(server, client, msg);
           return false;
         }
         
@@ -224,9 +247,11 @@ bool Command::mode(Server &server, Client &client,
     else if (c == 'o') {
       // +o/-o 両方とも引数が必要
       if (paramIndex >= command.params.size()) {
-        ServerHandler::queueMessage(server, client,
-          ":myserver 461 " + clientNickname + " MODE :Not enough parameters for " + 
-          (adding ? "+o" : "-o") + "\r\n");
+        IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "461", 
+          clientNickname + " MODE :Not enough parameters for " + 
+          (adding ? "+o" : "-o"));
+        CommandUtils::reply(server, client, msg);
         return false;
       }
       
@@ -234,8 +259,10 @@ bool Command::mode(Server &server, Client &client,
       
       // 対象ユーザーがチャンネルメンバーかチェック
       if (!channel->hasMember(targetNickname)) {
-        ServerHandler::queueMessage(server, client,
-          ":myserver 441 " + clientNickname + " " + targetNickname + " " + channelName + " :They aren't on that channel\r\n");
+        IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "441", 
+          clientNickname + " " + targetNickname + " " + channelName + " :They aren't on that channel");
+        CommandUtils::reply(server, client, msg);
         return false;
       }
       
@@ -257,8 +284,10 @@ bool Command::mode(Server &server, Client &client,
       break;
     } else {
       // 未知のモード
-      ServerHandler::queueMessage(server, client,
-        ":myserver 472 " + clientNickname + " " + std::string(1, c) + " :is unknown mode char to me\r\n");
+      IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "472", 
+        clientNickname + " " + std::string(1, c) + " :is unknown mode char to me");
+      CommandUtils::reply(server, client, msg);
       continue;
     }
   }
@@ -271,8 +300,9 @@ bool Command::mode(Server &server, Client &client,
          it != members.end(); ++it) {
       Client* memberClient = server.findClientByNickname(*it);
       if (memberClient) {
-        ServerHandler::queueMessage(server, *memberClient,
-          ":" + clientNickname + " MODE " + channelName + " " + responseMode + "\r\n");
+        IrcMessage modeMsg = CommandUtils::createIrcMessage(
+          clientNickname, "MODE", channelName + " " + responseMode);
+        CommandUtils::reply(server, *memberClient, modeMsg);
       }
     }
   }
