@@ -45,6 +45,7 @@ public:
   
   // Client management methods
   Client* findClientByNickname(const std::string& nickname);
+  void updateNicknameInAllChannels(const std::string& oldNickname, const std::string& newNickname);
 
 private:
   int port_;

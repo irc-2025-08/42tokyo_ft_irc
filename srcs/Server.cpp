@@ -160,3 +160,13 @@ Client* Server::findClientByNickname(const std::string& nickname) {
   }
   return NULL;
 }
+
+void Server::updateNicknameInAllChannels(const std::string& oldNickname, const std::string& newNickname) {
+  // 全チャンネルでニックネームを更新
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->hasMember(oldNickname)) {
+      it->updateMemberNickname(oldNickname, newNickname);
+    }
+  }
+}

@@ -15,6 +15,7 @@ public:
   bool isEmpty() const;
   size_t getMemberCount() const;
   const std::string& getName() const;
+  void updateMemberNickname(const std::string& oldNickname, const std::string& newNickname);
   
   // Operator management methods
   void addOperator(const std::string& nickname);

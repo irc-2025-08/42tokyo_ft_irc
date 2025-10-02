@@ -12,6 +12,7 @@
 
 #include "../../includes/Command.hpp"
 #include "../../includes/CommandUtils.hpp"
+#include "../../includes/Server.hpp"
 
 // todo: check if the nickname is valid and not already used
 bool Command::nick(Server &server, Client &client, const IrcMessage &command) {
@@ -23,7 +24,15 @@ bool Command::nick(Server &server, Client &client, const IrcMessage &command) {
     return true;//ここが発動しない
   }
 
-  client.setNickname(command.params[0]);
+  std::string oldNickname = client.getNickname();
+  std::string newNickname = command.params[0];
+  
+  // クライアントのニックネームを更新
+  client.setNickname(newNickname);
+  
+  // 全チャンネルでニックネームを更新
+  server.updateNicknameInAllChannels(oldNickname, newNickname);
+  
   IrcMessage msg = CommandUtils::createIrcMessage(server.getServerName(), "353",
                                                   client.getNickname() + " = " +
                                                       command.params[0]);

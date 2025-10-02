@@ -72,6 +72,26 @@ const std::string& Channel::getName() const {
   return channel_name;
 }
 
+void Channel::updateMemberNickname(const std::string& oldNickname, const std::string& newNickname) {
+  // メンバーリストでニックネームを更新
+  for (std::vector<std::string>::iterator it = channel_member_list.begin();
+       it != channel_member_list.end(); ++it) {
+    if (*it == oldNickname) {
+      *it = newNickname;
+      break;
+    }
+  }
+  
+  // オペレーターリストでニックネームを更新
+  for (std::vector<std::string>::iterator it = channel_operator_list.begin();
+       it != channel_operator_list.end(); ++it) {
+    if (*it == oldNickname) {
+      *it = newNickname;
+      break;
+    }
+  }
+}
+
 // Operator management methods
 void Channel::addOperator(const std::string& nickname) {
   // 重複チェック
