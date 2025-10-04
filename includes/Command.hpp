@@ -32,5 +32,7 @@ public:
   static bool debug(Server &server, Client &client, const IrcMessage &command);
   static bool motd(Server &server, Client &client, const IrcMessage &command);
   static bool privmsg(Server &server, Client &client, const IrcMessage &command);
+  static bool notice(Server &server, Client &client, const IrcMessage &command);
+  static bool oper(Server &server, Client &client, const IrcMessage &command);
   static bool pass(Server &server, Client &client, const IrcMessage &command);
 };

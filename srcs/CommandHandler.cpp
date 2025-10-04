@@ -35,6 +35,8 @@ void CommandHandler::initCommandMap() {
   commandMap_["DEBUG"] = Command::debug;
   commandMap_["MOTD"] = Command::motd;
   commandMap_["PRIVMSG"] = Command::privmsg;
+  commandMap_["NOTICE"] = Command::notice;
+  commandMap_["OPER"] = Command::oper;
   commandMap_["PASS"] = Command::pass;
 }
 
