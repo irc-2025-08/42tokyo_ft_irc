@@ -123,3 +123,50 @@ void Server::eventLoop() {
     }
   }
 }
+
+// Channel management methods
+Channel* Server::findChannel(const std::string& channelName) {
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->getName() == channelName) {
+      return &(*it);
+    }
+  }
+  return NULL;
+}
+
+void Server::addChannel(const std::string& channelName) {
+  channels_.push_back(Channel(channelName));
+}
+
+void Server::removeChannel(const std::string& channelName) {
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->getName() == channelName) {
+      std::cout << "[INFO] Channel deleted: " << channelName << std::endl;
+      channels_.erase(it);
+      return;
+    }
+  }
+}
+
+// Client management methods
+Client* Server::findClientByNickname(const std::string& nickname) {
+  for (std::map<int, Client>::iterator it = clients_.begin();
+       it != clients_.end(); ++it) {
+    if (it->second.getNickname() == nickname) {
+      return &(it->second);
+    }
+  }
+  return NULL;
+}
+
+void Server::updateNicknameInAllChannels(const std::string& oldNickname, const std::string& newNickname) {
+  // 全チャンネルでニックネームを更新
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->hasMember(oldNickname)) {
+      it->updateMemberNickname(oldNickname, newNickname);
+    }
+  }
+}

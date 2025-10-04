@@ -13,8 +13,10 @@
 #pragma once
 
 #include "Client.hpp"
+#include "Channel.hpp"
 #include <map>
 #include <string>
+#include <vector>
 
 class ServerHandler;
 
@@ -35,6 +37,15 @@ public:
   std::string getPassword() const;
   std::string getServerName() const;
   std::map<int, Client> getClientsMap() const;
+  
+  // Channel management methods
+  Channel* findChannel(const std::string& channelName);
+  void addChannel(const std::string& channelName);
+  void removeChannel(const std::string& channelName);
+  
+  // Client management methods
+  Client* findClientByNickname(const std::string& nickname);
+  void updateNicknameInAllChannels(const std::string& oldNickname, const std::string& newNickname);
 
 private:
   int port_;
@@ -44,6 +55,7 @@ private:
   int socketFd_;
   int epollFd_;
   std::map<int, Client> clients_;
+  std::vector<Channel> channels_;
 
   /**
    * @brief event loop

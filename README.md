@@ -3,7 +3,7 @@ for development
 
 Helpful documents:
 - http://chi.cs.uchicago.edu/chirc/irc.html
-- https://datatracker.ietf.org/doc/html/rfc2812
+- https://datatracker.ietf.org/doc/html/rfc2813
 - https://qiita.com/gu-chi?page=1
 
 ### start server

@@ -1,9 +1,11 @@
+#include "../../includes/Command.hpp"
 #include "../../includes/CommandHandler.hpp"
 #include "../../includes/ServerHandler.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
+#include "../../includes/IrcMessage.hpp"
 
-bool CommandHandler::passCmd(Server &server, Client &client,
+bool Command::pass(Server &server, Client &client,
                                  const IrcMessage &command) {
   if (client.isRegistered()) {
     ServerHandler::queueMessage(server, client, ":myserver 462 " + client.getNickname() + " :You may not reregister\r\n");

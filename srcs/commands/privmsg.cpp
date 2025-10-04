@@ -38,7 +38,8 @@ bool Command::privmsg(Server &server, Client &client, const IrcMessage &command)
     std::map<int, Client> clientsMap = server.getClientsMap();
     bool targetFound = false;
     
-    for (std::map<int, Client>::const_iterator it = clientsMap.begin(); it != clientsMap.end(); ++it) {
+    for (std::map<int, Client>::const_iterator it = clientsMap.begin();
+         it != clientsMap.end(); ++it) {
       const Client &targetClient = it->second;
       if (targetClient.getNickname() == target) {
         IrcMessage privmsgMessage = CommandUtils::createIrcMessage(
