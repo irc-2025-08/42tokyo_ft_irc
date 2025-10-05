@@ -13,12 +13,6 @@
 #include "../../includes/Command.hpp"
 #include "../../includes/CommandUtils.hpp"
 
-static bool isRegistrationComplete(const Client &client) {
-  return client.isPasswordProvided() && 
-         client.getNickname() != "*" && 
-         !client.getUsername().empty();
-}
-
 bool Command::user(Server &server, Client &client, const IrcMessage &command) {
   if (client.isRegistered()) {
     IrcMessage msg = CommandUtils::createIrcMessage(
@@ -49,7 +43,8 @@ bool Command::user(Server &server, Client &client, const IrcMessage &command) {
     }
   }
   
-  if (isRegistrationComplete(client)) {
+  if (!client.isRegistered() &&
+      CommandUtils::isClientRegistrationComplete(client)) {
     client.setRegistered(true);
     CommandUtils::sendWelcomeMessage(server, client);
   }

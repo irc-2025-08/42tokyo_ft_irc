@@ -4,6 +4,7 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Client.hpp"
 #include "../../includes/IrcMessage.hpp"
+#include "../../includes/CommandUtils.hpp"
 
 bool Command::pass(Server &server, Client &client,
                                  const IrcMessage &command) {
@@ -24,5 +25,10 @@ bool Command::pass(Server &server, Client &client,
   }
 
   client.setPasswordProvided(true);
+  if (!client.isRegistered() &&
+      CommandUtils::isClientRegistrationComplete(client)) {
+    client.setRegistered(true);
+    CommandUtils::sendWelcomeMessage(server, client);
+  }
   return true;
 }

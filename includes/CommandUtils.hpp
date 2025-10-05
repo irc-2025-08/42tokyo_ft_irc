@@ -38,4 +38,5 @@ public:
    * @brief send welcome message(001~004) to the client
    */
   static int sendWelcomeMessage(Server &server, Client &client);
+  static bool isClientRegistrationComplete(const Client &client);
 };

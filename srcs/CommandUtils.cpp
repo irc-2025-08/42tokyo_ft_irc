@@ -11,9 +11,15 @@
 /* ************************************************************************** */
 
 #include "../includes/CommandUtils.hpp"
+#include "../includes/Client.hpp"
 #include "../includes/CommandHandler.hpp"
 #include "../includes/ServerHandler.hpp"
 #include <iostream>
+
+bool CommandUtils::isClientRegistrationComplete(const Client &client) {
+  return client.isPasswordProvided() && client.getNickname() != "*" &&
+         !client.getUsername().empty();
+}
 
 int CommandUtils::sendWelcomeMessage(Server &server, Client &client) {
   IrcMessage msg =

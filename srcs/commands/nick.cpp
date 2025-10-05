@@ -20,11 +20,21 @@ bool Command::nick(Server &server, Client &client, const IrcMessage &command) {
         server.getServerName(), "431",
         client.getNickname() + " :No nickname given");
     CommandUtils::reply(server, client, msg);
-    return true;//ここが発動しない
+    return false;
   }
 
   std::string oldNickname = client.getNickname();
   std::string newNickname = command.params[0];
+
+  Client *existingClient = server.findClientByNickname(newNickname);
+  if (existingClient != NULL && existingClient->getFd() != client.getFd()) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "433",
+        client.getNickname() + " " + newNickname +
+            " :Nickname is already in use");
+    CommandUtils::reply(server, client, msg);
+    return false;
+  }
   
   // クライアントのニックネームを更新
   client.setNickname(newNickname);
@@ -32,6 +42,12 @@ bool Command::nick(Server &server, Client &client, const IrcMessage &command) {
   // 全チャンネルでニックネームを更新
   server.updateNicknameInAllChannels(oldNickname, newNickname);
   
+  if (!client.isRegistered() &&
+      CommandUtils::isClientRegistrationComplete(client)) {
+    client.setRegistered(true);
+    CommandUtils::sendWelcomeMessage(server, client);
+  }
+
   IrcMessage msg = CommandUtils::createIrcMessage(server.getServerName(), "353",
                                                   client.getNickname() + " = " +
                                                       command.params[0]);
