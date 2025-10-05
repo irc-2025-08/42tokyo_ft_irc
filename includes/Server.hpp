@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:48 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:56:59 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:02:56 by tac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,10 @@ public:
   // Client management methods
   Client* findClientByNickname(const std::string& nickname);
   void updateNicknameInAllChannels(const std::string& oldNickname, const std::string& newNickname);
+  std::vector<std::string> getChannelNamesForMember(const std::string& nickname);
+  void removeClientFromChannel(const std::string &channelName,
+                               const std::string &nickname);
+  void handleClientQuit(Client &client, const std::string &reason);
 
 private:
   int port_;

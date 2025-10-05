@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:29 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:57:06 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:02:04 by tac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 #include "../includes/CommandHandler.hpp"
+#include "../includes/CommandUtils.hpp"
 #include "../includes/ServerHandler.hpp"
 #include "../includes/ServerUtils.hpp"
 #include "../includes/config.hpp"
@@ -75,6 +76,83 @@ std::string Server::getPassword() const { return password_; }
 std::string Server::getServerName() const { return serverName_; }
 
 std::map<int, Client> Server::getClientsMap() const { return clients_; }
+
+std::vector<std::string> Server::getChannelNamesForMember(
+    const std::string &nickname) {
+  std::vector<std::string> channelNames;
+
+  for (std::vector<Channel>::iterator it = channels_.begin();
+       it != channels_.end(); ++it) {
+    if (it->hasMember(nickname)) {
+      channelNames.push_back(it->getName());
+    }
+  }
+
+  return channelNames;
+}
+
+void Server::removeClientFromChannel(const std::string &channelName,
+                                     const std::string &nickname) {
+  Channel *channel = findChannel(channelName);
+  if (channel == NULL) {
+    return;
+  }
+
+  channel->removeMember(nickname);
+  if (channel->isOperator(nickname)) {
+    channel->removeOperator(nickname);
+  }
+
+  if (channel->isEmpty()) {
+    removeChannel(channelName);
+  }
+}
+
+static std::string buildQuitPrefix(const Server &server, const Client &client) {
+  std::string prefix = client.getNickname();
+  if (!client.getUsername().empty()) {
+    prefix += "!" + client.getUsername();
+  }
+  prefix += "@" + server.getServerName();
+  return prefix;
+}
+
+void Server::handleClientQuit(Client &client, const std::string &reason) {
+  std::vector<std::string> channelNames =
+      getChannelNamesForMember(client.getNickname());
+
+  IrcMessage quitMessage = CommandUtils::createIrcMessage(
+      buildQuitPrefix(*this, client), "QUIT", ":" + reason);
+
+  for (std::vector<std::string>::iterator it = channelNames.begin();
+       it != channelNames.end(); ++it) {
+    const std::string &channelName = *it;
+    Channel *channel = findChannel(channelName);
+    if (channel == NULL) {
+      continue;
+    }
+
+    std::vector<std::string> members = channel->getMembers();
+    for (std::vector<std::string>::iterator memberIt = members.begin();
+         memberIt != members.end(); ++memberIt) {
+      Client *memberClient = findClientByNickname(*memberIt);
+      if (memberClient != NULL && memberClient->getFd() != client.getFd()) {
+        CommandUtils::reply(*this, *memberClient, quitMessage);
+      }
+    }
+
+    removeClientFromChannel(channelName, client.getNickname());
+  }
+
+  CommandUtils::reply(*this, client, quitMessage);
+
+  IrcMessage errorMessage = CommandUtils::createIrcMessage(
+      getServerName(), "ERROR",
+      ":Closing Link: " + client.getNickname() + " (" + reason + ")");
+  CommandUtils::reply(*this, client, errorMessage);
+
+  ServerHandler::closeClientConnection(*this, client);
+}
 
 void Server::run() {
   if (getStatus() == SERV_ERROR)

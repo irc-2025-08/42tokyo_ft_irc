@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:24 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/23 21:03:25 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:02:04 by tac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void CommandHandler::initCommandMap() {
   commandMap_["USER"] = Command::user;
   commandMap_["JOIN"] = Command::join;
   commandMap_["PART"] = Command::part;
+  commandMap_["QUIT"] = Command::quit;
   commandMap_["KICK"] = Command::kick;
   commandMap_["NAMES"] = Command::names;
   commandMap_["INVITE"] = Command::invite;
@@ -37,6 +38,7 @@ void CommandHandler::initCommandMap() {
   commandMap_["PRIVMSG"] = Command::privmsg;
   commandMap_["NOTICE"] = Command::notice;
   commandMap_["OPER"] = Command::oper;
+  commandMap_["KILL"] = Command::kill;
   commandMap_["PASS"] = Command::pass;
 }
 

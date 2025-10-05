@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:37 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 21:50:38 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:02:04 by tac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ public:
   static bool user(Server &server, Client &client, const IrcMessage &command);
   static bool join(Server &server, Client &client, const IrcMessage &command);
   static bool part(Server &server, Client &client, const IrcMessage &command);
+  static bool quit(Server &server, Client &client, const IrcMessage &command);
   static bool kick(Server &server, Client &client, const IrcMessage &command);
   static bool names(Server &server, Client &client, const IrcMessage &command);
   static bool invite(Server &server, Client &client, const IrcMessage &command);
@@ -35,4 +36,5 @@ public:
   static bool notice(Server &server, Client &client, const IrcMessage &command);
   static bool oper(Server &server, Client &client, const IrcMessage &command);
   static bool pass(Server &server, Client &client, const IrcMessage &command);
+  static bool kill(Server &server, Client &client, const IrcMessage &command);
 };
