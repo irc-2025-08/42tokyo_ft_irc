@@ -25,6 +25,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+bool ctrl_c_shutdown = false;
+
 Server::Server(int port, std::string password)
     : port_(port), password_(password), serverName_(config::serverName),
       serverStatus_(SERV_STOP) {
@@ -168,9 +170,14 @@ void Server::run() {
 void Server::eventLoop() {
   epoll_event events[config::maxEvents];
 
-  while (getStatus() == SERV_RUNNING) {
+  while (getStatus() == SERV_RUNNING) {    
     // wait for events
     int nfds = epoll_wait(epollFd_, events, config::maxEvents, -1);
+    
+    if (ctrl_c_shutdown == true) {
+      setStatus(SERV_STOP);
+      break;
+    }
 
     if (nfds < 0) {
       std::cerr << "[WARN] ircd: Failed to wait for events" << std::endl;
