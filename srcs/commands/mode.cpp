@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/17 XX:XX:XX by yxu               #+#    #+#             */
-/*   Updated: 2025/09/17 XX:XX:XX by yxu              ###   ########.fr       */
+/*   Created: 2025/09/17 00:00:00 by yxu               #+#    #+#             */
+/*   Updated: 2025/10/05 12:51:37 by tac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,45 +25,54 @@ bool Command::mode(Server &server, Client &client,
                      const IrcMessage &command) {
   
   // パラメータチェック (channel mode_string)
-  if (command.params.size() < 2) {
+  if (command.params.empty()) {
     IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "461", 
-      client.getNickname() + " MODE :Not enough parameters");
+        server.getServerName(), "461",
+        client.getNickname() + " MODE :Not enough parameters");
     CommandUtils::reply(server, client, msg);
     return false;
   }
-  
-  std::string channelName = command.params[0];
-  std::string modeString = command.params[1];
+
+  std::string target = command.params[0];
   std::string clientNickname = client.getNickname();
-  
-  // チャンネルが存在するかチェック
-  Channel* channel = server.findChannel(channelName);
-  if (channel == NULL) {
-    IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "403", 
-      clientNickname + " " + channelName + " :No such channel");
-    CommandUtils::reply(server, client, msg);
-    return false;
-  }
-  
-  // クライアントがチャンネルのメンバーかチェック
-  if (!channel->hasMember(clientNickname)) {
-    IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "442", 
-      clientNickname + " " + channelName + " :You're not on that channel");
-    CommandUtils::reply(server, client, msg);
-    return false;
-  }
-  
-  // クライアントがチャンネルオペレーターかチェック
-  if (!channel->isOperator(clientNickname)) {
-    IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "482", 
-      clientNickname + " " + channelName + " :You're not channel operator");
-    CommandUtils::reply(server, client, msg);
-    return false;
-  }
+
+  if (!target.empty() && target[0] == '#') {
+    if (command.params.size() < 2) {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "461",
+          clientNickname + " MODE :Not enough parameters");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
+
+    std::string channelName = target;
+    std::string modeString = command.params[1];
+
+    Channel *channel = server.findChannel(channelName);
+    if (channel == NULL) {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "403",
+          clientNickname + " " + channelName + " :No such channel");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
+
+    if (!channel->hasMember(clientNickname)) {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "442",
+          clientNickname + " " + channelName + " :You're not on that channel");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
+
+    if (!channel->isOperator(clientNickname)) {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "482",
+          clientNickname + " " + channelName +
+              " :You're not channel operator");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
   
   // 複数のモードオプションがある場合はエラー
   size_t modeCount = 0;
@@ -89,7 +98,7 @@ bool Command::mode(Server &server, Client &client,
     CommandUtils::reply(server, client, msg);
     return false;
   }
-  
+
   // モード文字列を解析
   bool adding = true;  // デフォルトは追加モード
   std::string responseMode = "";
@@ -298,14 +307,73 @@ bool Command::mode(Server &server, Client &client,
     std::vector<std::string> members = channel->getMembers();
     for (std::vector<std::string>::const_iterator it = members.begin();
          it != members.end(); ++it) {
-      Client* memberClient = server.findClientByNickname(*it);
+      Client *memberClient = server.findClientByNickname(*it);
       if (memberClient) {
         IrcMessage modeMsg = CommandUtils::createIrcMessage(
-          clientNickname, "MODE", channelName + " " + responseMode);
+            clientNickname, "MODE", channelName + " " + responseMode);
         CommandUtils::reply(server, *memberClient, modeMsg);
       }
     }
   }
-  
+
+  return true;
+  }
+
+  // ユーザーモードの処理
+  if (command.params.size() < 2) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "221",
+        clientNickname + " +" + (client.isInvisible() ? "i" : ""));
+    CommandUtils::reply(server, client, msg);
+    return true;
+  }
+
+  if (target != clientNickname) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "502",
+        clientNickname + " :Can't change mode for other users");
+    CommandUtils::reply(server, client, msg);
+    return false;
+  }
+
+  std::string modeString = command.params[1];
+  if (modeString.empty()) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        server.getServerName(), "221",
+        clientNickname + " +" + (client.isInvisible() ? "i" : ""));
+    CommandUtils::reply(server, client, msg);
+    return true;
+  }
+
+  bool adding = true;
+  bool changed = false;
+  for (size_t i = 0; i < modeString.length(); ++i) {
+    char c = modeString[i];
+    if (c == '+') {
+      adding = true;
+    } else if (c == '-') {
+      adding = false;
+    } else if (c == 'i') {
+      bool newValue = adding;
+      if (client.isInvisible() != newValue) {
+        client.setInvisible(newValue);
+        changed = true;
+      }
+    } else {
+      IrcMessage msg = CommandUtils::createIrcMessage(
+          server.getServerName(), "501",
+          clientNickname + " :Unknown MODE flag");
+      CommandUtils::reply(server, client, msg);
+      return false;
+    }
+  }
+
+  if (changed) {
+    IrcMessage msg = CommandUtils::createIrcMessage(
+        clientNickname, "MODE",
+        clientNickname + " " + (client.isInvisible() ? "+i" : "-i"));
+    CommandUtils::reply(server, client, msg);
+  }
+
   return true;
 }

@@ -40,6 +40,8 @@ public:
   bool isConnected() const;
   void setConnected(bool connected);
   void setPasswordProvided(bool provided);
+  bool isInvisible() const;
+  void setInvisible(bool invisible);
   Client(const Client &other);
   Client &operator=(const Client &other);
 
@@ -53,6 +55,7 @@ private:
   bool passwordProvided_;
   bool connected_;
   bool operator_;
+  bool invisible_;
   std::string recvBuffer_;
   std::string sendBuffer_;
 };

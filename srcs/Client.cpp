@@ -13,17 +13,26 @@
 #include "../includes/Client.hpp"
 #include <cstring>
 
-Client::Client() : fd_(-1), nickname_("*"), username_(""), realname_(""), registered_(false), passwordProvided_(false), connected_(false), operator_(false) {}
+Client::Client()
+    : fd_(-1), nickname_("*"), username_(""), realname_(""),
+      registered_(false), passwordProvided_(false), connected_(false),
+      operator_(false), invisible_(false) {}
 
 Client::Client(int fd, sockaddr_in addr)
-    : fd_(fd), addr_(addr), nickname_("*"), username_(""), realname_(""), registered_(false), passwordProvided_(false), connected_(false), operator_(false) {}
+    : fd_(fd), addr_(addr), nickname_("*"), username_(""), realname_(""),
+      registered_(false), passwordProvided_(false), connected_(false),
+      operator_(false), invisible_(false) {}
 
 Client::~Client() {}
 
 Client::Client(const Client &other)
     : fd_(other.fd_), addr_(other.addr_), nickname_(other.nickname_),
-      username_(other.username_), realname_(other.realname_), registered_(other.registered_), passwordProvided_(other.passwordProvided_),
-      connected_(other.connected_), operator_(other.operator_), recvBuffer_(other.recvBuffer_), sendBuffer_(other.sendBuffer_) {}
+      username_(other.username_), realname_(other.realname_),
+      registered_(other.registered_),
+      passwordProvided_(other.passwordProvided_),
+      connected_(other.connected_), operator_(other.operator_),
+      invisible_(other.invisible_), recvBuffer_(other.recvBuffer_),
+      sendBuffer_(other.sendBuffer_) {}
 
 Client &Client::operator=(const Client &other) {
   fd_ = other.fd_;
@@ -35,6 +44,7 @@ Client &Client::operator=(const Client &other) {
   passwordProvided_ = other.passwordProvided_;
   connected_ = other.connected_;
   operator_ = other.operator_;
+  invisible_ = other.invisible_;
   recvBuffer_ = other.recvBuffer_;
   sendBuffer_ = other.sendBuffer_;
   return *this;
@@ -69,3 +79,7 @@ void Client::setRegistered(bool registered) { registered_ = registered; }
 bool Client::isOperator() const { return operator_; }
 
 void Client::setOperator(bool operator_status) { operator_ = operator_status; }
+
+bool Client::isInvisible() const { return invisible_; }
+
+void Client::setInvisible(bool invisible) { invisible_ = invisible; }

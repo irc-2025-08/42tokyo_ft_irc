@@ -41,6 +41,13 @@ bool Command::user(Server &server, Client &client, const IrcMessage &command) {
   
   client.setUsername(username);
   client.setRealname(realname);
+
+  if (!client.isInvisible() && command.params.size() > 1) {
+    const std::string &modeField = command.params[1];
+    if (!modeField.empty() && modeField.find('i') != std::string::npos) {
+      client.setInvisible(true);
+    }
+  }
   
   if (isRegistrationComplete(client)) {
     client.setRegistered(true);

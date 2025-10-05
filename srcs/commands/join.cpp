@@ -33,12 +33,8 @@ bool Command::join(Server &server, Client &client,
   std::string clientNickname = client.getNickname();
   
   // チャンネル名の検証
-  if (channelName.empty()) {
-    IrcMessage msg = CommandUtils::createIrcMessage(
-      server.getServerName(), "476", 
-      clientNickname + " " + channelName + " :Bad Channel Mask");
-    CommandUtils::reply(server, client, msg);
-    return false;
+  if (channelName.empty() || channelName == "0") {
+    return true;
   }
   
   // チャンネルが存在するかチェック
