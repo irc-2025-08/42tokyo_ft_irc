@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+extern bool ctrl_c_shutdown;
+
 class ServerHandler;
 
 class Server {

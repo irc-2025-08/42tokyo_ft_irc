@@ -17,6 +17,13 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <csignal>
+
+static void	signal_handler(int signal)
+{
+	(void)signal;
+	ctrl_c_shutdown = true;
+}
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -34,6 +41,7 @@ int main(int argc, char **argv) {
 
   // run the server
   try {
+    std::signal(SIGINT, signal_handler);
     Server server(port, password);
     server.run();
     std::cout << "[INFO] ircd: Server stopped" << std::endl;
