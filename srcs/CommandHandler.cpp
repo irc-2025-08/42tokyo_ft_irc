@@ -33,7 +33,6 @@ void CommandHandler::initCommandMap() {
   commandMap_["INVITE"] = Command::invite;
   commandMap_["MODE"] = Command::mode;
   commandMap_["TOPIC"] = Command::topic;
-  commandMap_["DEBUG"] = Command::debug;
   commandMap_["MOTD"] = Command::motd;
   commandMap_["PRIVMSG"] = Command::privmsg;
   commandMap_["NOTICE"] = Command::notice;
