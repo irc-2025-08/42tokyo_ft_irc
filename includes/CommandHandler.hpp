@@ -6,7 +6,7 @@
 /*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:43 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/23 19:55:19 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 16:52:25 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,4 @@ private:
 
   static void processCommand(Server &server, Client &client,
                              const IrcMessage &command);
-
-  static bool ping(Server &server, Client &client,
-                                 const IrcMessage &command);
-  static bool join(Server &server, Client &client,
-                                 const IrcMessage &command);
-  static bool part(Server &server, Client &client,
-                                 const IrcMessage &command);
-  static bool pass(Server &server, Client &client,
-                                 const IrcMessage &command);
 };
