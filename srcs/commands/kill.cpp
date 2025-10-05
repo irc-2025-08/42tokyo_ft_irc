@@ -84,8 +84,6 @@ bool Command::kill(Server &server, Client &client, const IrcMessage &command) {
 
   sendKillAcknowledgement(server, client, targetNickname, reason);
   notifyTargetOfKill(server, client, *targetClient, reason);
-
-  ServerHandler::closeClientConnection(server, *targetClient);
   return true;
 }
 

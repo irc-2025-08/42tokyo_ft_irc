@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerHandler.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: yxu <yxu@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:32 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/06 22:19:29 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:46:50 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,8 @@ void ServerHandler::handleSend(Server &server, Client &client) {
 }
 
 void ServerHandler::closeClientConnection(Server &server, Client &client) {
-  server.clients_.erase(client.getFd());
   close(client.getFd());
   std::cout << "[INFO] ircd: Client " << client.getFd() << " disconnected"
             << std::endl;
+  server.clients_.erase(client.getFd());
 }

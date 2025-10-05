@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tac <tac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: yxu <yxu@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 00:18:29 by yxu               #+#    #+#             */
-/*   Updated: 2025/10/05 18:02:04 by tac              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:48:10 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,8 +152,6 @@ void Server::handleClientQuit(Client &client, const std::string &reason) {
       getServerName(), "ERROR",
       ":Closing Link: " + client.getNickname() + " (" + reason + ")");
   CommandUtils::reply(*this, client, errorMessage);
-
-  ServerHandler::closeClientConnection(*this, client);
 }
 
 void Server::run() {
@@ -170,10 +168,10 @@ void Server::run() {
 void Server::eventLoop() {
   epoll_event events[config::maxEvents];
 
-  while (getStatus() == SERV_RUNNING) {    
+  while (getStatus() == SERV_RUNNING) {
     // wait for events
     int nfds = epoll_wait(epollFd_, events, config::maxEvents, -1);
-    
+
     if (ctrl_c_shutdown == true) {
       setStatus(SERV_STOP);
       break;
