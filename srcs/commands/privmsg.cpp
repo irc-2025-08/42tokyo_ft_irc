@@ -33,26 +33,40 @@ bool Command::privmsg(Server &server, Client &client, const IrcMessage &command)
   }
 
   if (target[0] == '#') {
-    return false;
-  } else {
-    std::map<int, Client> clientsMap = server.getClientsMap();
-    bool targetFound = false;
-    
-    for (std::map<int, Client>::const_iterator it = clientsMap.begin();
-         it != clientsMap.end(); ++it) {
-      const Client &targetClient = it->second;
-      if (targetClient.getNickname() == target) {
-        IrcMessage privmsgMessage = CommandUtils::createIrcMessage(
-            ":" + client.getNickname() + "!" + client.getUsername() + "@" + server.getServerName(),
-            "PRIVMSG",
-            target + " :" + message);
-        CommandUtils::reply(server, const_cast<Client&>(targetClient), privmsgMessage);
-        targetFound = true;
-        break;
+    Channel *channel = server.findChannel(target);
+    if (channel == NULL) {
+      IrcMessage errorMsg = CommandUtils::createIrcMessage(
+          ":" + server.getServerName(),
+          "403",
+          client.getNickname() + " " + target + " :No such channel");
+      CommandUtils::reply(server, client, errorMsg);
+      return false;
+    }
+
+    if (!channel->hasMember(client.getNickname())) {
+      IrcMessage errorMsg = CommandUtils::createIrcMessage(
+          ":" + server.getServerName(),
+          "442",
+          client.getNickname() + " " + target + " :You're not on that channel");
+      CommandUtils::reply(server, client, errorMsg);
+      return false;
+    }
+
+    std::vector<std::string> members = channel->getMembers();
+    IrcMessage privmsgMessage = CommandUtils::createIrcMessage(
+        client.getNickname() + "!" + client.getUsername() + "@" + server.getServerName(),
+        "PRIVMSG",
+        target + " :" + message);
+
+    for (size_t i = 0; i < members.size(); ++i) {
+      Client *memberClient = server.findClientByNickname(members[i]);
+      if (memberClient != NULL && memberClient->getNickname() != client.getNickname()) {
+        CommandUtils::reply(server, *memberClient, privmsgMessage);
       }
     }
-    
-    if (!targetFound) {
+  } else {
+    Client *targetClient = server.findClientByNickname(target);
+    if (targetClient == NULL) {
       IrcMessage errorMsg = CommandUtils::createIrcMessage(
           ":" + server.getServerName(),
           "401",
@@ -60,6 +74,12 @@ bool Command::privmsg(Server &server, Client &client, const IrcMessage &command)
       CommandUtils::reply(server, client, errorMsg);
       return false;
     }
+
+    IrcMessage privmsgMessage = CommandUtils::createIrcMessage(
+        client.getNickname() + "!" + client.getUsername() + "@" + server.getServerName(),
+        "PRIVMSG",
+        target + " :" + message);
+    CommandUtils::reply(server, *targetClient, privmsgMessage);
   }
 
   return true;
