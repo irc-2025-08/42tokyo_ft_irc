@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandUtils.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yxu <yxu@student.42tokyo.jp>               +#+  +:+       +#+        */
+/*   By: yxu <yxu@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 21:50:14 by yxu               #+#    #+#             */
-/*   Updated: 2025/09/23 20:49:22 by yxu              ###   ########.fr       */
+/*   Updated: 2025/10/05 18:18:16 by yxu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 class Server;
 class Client;
-class IrcMessage;
+struct IrcMessage;
 
 class CommandUtils {
 public:
